@@ -1,0 +1,12 @@
+---
+- name: Loop example
+  hosts: korea
+    
+  tasks:
+    - name: Postfix and Dovecot install
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop:
+        - postfix
+        - dovecot

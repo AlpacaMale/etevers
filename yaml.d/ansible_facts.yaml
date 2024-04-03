@@ -1,0 +1,15 @@
+---
+- name: Demonstrate the "in" keyword
+  hosts: korea
+  gather_facts: yes
+  vars:
+    supported_distros:
+      - RedHat
+      - Fedora
+      - Rocky
+  tasks:
+    - name: Install httpd using dnf, where supported
+      yum:
+        name: httpd
+        state: present
+      when: ansible_facts['distribution'] in supported_distros

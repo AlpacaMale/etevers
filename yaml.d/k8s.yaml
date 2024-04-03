@@ -1,0 +1,32 @@
+---
+- name: Set enviroment k8s
+  hosts: korea
+  gather_facts: no
+
+  tasks:
+    - name: Set SELinux state to permissive
+      selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Disable swap
+      command: swapoff -a
+
+    - name: Gather selinux facts
+      setup:
+        filter: "ansible_selinux*"
+      register: selinux_facts
+
+
+    - name: Gather swap facts
+      setup:
+        filter: "ansible_swap*"
+      register: swap_facts
+
+    - name: Show SELinux facts
+      debug:
+        var: selinux_facts
+
+    - name: Show swap facts
+      debug:
+        var: swap_facts
