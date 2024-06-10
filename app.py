@@ -1,33 +1,22 @@
 from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
 import datetime
-
-##############sql######################
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-
-# 데이터베이스 연결 URL을 설정합니다.
-# 형식: 'mysql+pymysql://<username>:<password>@<host>/<dbname>'
-
-DATABASE_URL = 'mysql+pymysql://user1:root@localhost/mydb'
-
-# SQLAlchemy 엔진 생성
-engine = create_engine(DATABASE_URL)
-db_session = scoped_session(sessionmaker(bind=engine))
-#######################################
+from config import Config
+from models import db, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, Weight
 
 # from flask_session import Session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.config.from_object(Config)
+db.init_app(app)
 
 @app.before_request
 def before_request():
-    get_db(db_session)
+    get_db()
 
 @app.teardown_request
 def teardown(exception):
-    teardown_request(exception, db_session)
+    teardown_request(exception)
 
 @app.route("/", methods=["GET","POST"])
 def get_started():
@@ -79,9 +68,11 @@ def change_password():
 @app.route("/input", methods=["GET", "POST"])
 @login_required
 def input():
+    db = get_db()
     if request.method == "POST":
         meal_plan = request.form.to_dict()
         print(meal_plan)
+        
         
         # 밀 플랜을 받아서 meal plan item 테이블에 쓰기
         return redirect("/main")
@@ -98,19 +89,17 @@ def input():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-
+        db = get_db()
         login_data = request.form.to_dict()
         email = login_data.get("email")
         password = login_data.get("password")
 
-
-        user_found = False
-        #db에서 로그인 데이터를 불러와서 맞으면 세션로그인 하는 로직
+        if not db.query(User).filter_by(email=email, password=password).first():
+            return error(401)
         
-        if user_found == True:
-            return redirect("/main")
-        else:
-            return redirect("/login")
+        session['email'] = email
+        
+        return redirect("/main")
         
         #원래 가려고 했던 페이지를 세션에서 받아와서 리디렉션하는 로직
 
@@ -125,9 +114,21 @@ def logout():
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
+        db = get_db()
         register_data = request.form.to_dict()
         email = register_data.get("email")
+        if db.query(User).filter_by(email=email).first():
+            return error(400)
+
+        password = register_data.get("password")
+        password_confirm = register_data.get("password-confirm")
+
+        if password != password_confirm:
+            return error(400)
         
+        new_user = User(email=email, password=password)
+        db.add(new_user)
+        db.commit()
         # 회원가입 로직
         
         return redirect("/")
