@@ -8,7 +8,14 @@
 
 
 #index_bg{
+    object-fit: cover;
     background-image: url(../images/bg.png);
+    /* background-size: cover; */
+    background-repeat: no-repeat;
+}
+
+.navbar{
+    --bs-navbar-padding-y: 1rem;
 }
 
 .left-box{
@@ -18,6 +25,7 @@
 .left-box .text{
     font-family: 'Pretendard Variable';
     font-weight: bold;
-    font-size: 50px;
+    font-size: 56px;
     margin-bottom: 50px;
+    line-height: 80px;
 }
