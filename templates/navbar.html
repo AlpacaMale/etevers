@@ -1,0 +1,57 @@
+<nav class="navbar navbar-dark bg-dark fixed-top">
+  <div class="container-fluid">
+    {% if 'email' in session %}
+    <a class="navbar-brand" href="/logout">Logout</a>
+    {% else %}
+    <a class="navbar-brand" href="/login">Login</a>
+    {% endif %}
+    <a class="navbar-brand" href="/">Maintain</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasDarkNavbar"
+      aria-controls="offcanvasDarkNavbar"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="offcanvas offcanvas-end text-bg-dark"
+      tabindex="-1"
+      id="offcanvasDarkNavbar"
+      aria-labelledby="offcanvasDarkNavbarLabel"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
+          <!-- <img
+            src="https://cdn.discordapp.com/attachments/1244521082946588695/1245211624672067674/bglassm_Logo_for_word_mAIntAIn_food_and_health_concept_1aa21530-4d8d-4daf-8a25-a9ee82f985ab.png?ex=666127b2&is=665fd632&hm=3cdac470c5d8b29343db5cdcb3b4ee4030f7fe393345af8076e3fd3fafb38432&"
+            alt="vegits"
+            style="max-width: 40px; max-height: 40px"
+          /> -->
+          Maintain Logo
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="#">DATE</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">WEEK</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div style="height: 56px"></div>

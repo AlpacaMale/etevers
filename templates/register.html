@@ -1,0 +1,56 @@
+{% extends "layout.html" %} {% block body %}
+<main
+  class="container content d-flex align-items-center justify-content-center"
+>
+  <div class="border border-3 border-dark rounded p-5">
+    <p class="text-center fw-bold fs-4">Maintain</p>
+    <p class="text-center fw-bold fs-1">Register</p>
+    <form action="/register" method="post">
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input
+          class="form-control"
+          type="email"
+          name="email"
+          required
+          id="email"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <input
+          class="form-control"
+          type="password"
+          name="password"
+          required
+          id="password"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password-confirm"
+          >Password Confirm</label
+        >
+        <input
+          class="form-control"
+          type="password"
+          name="password-confirm"
+          required
+          id="password-confirm"
+        />
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-text">
+          <input class="form-check-input" type="checkbox" required id="agree" />
+        </div>
+        <label class="input-group-text" for="agree"
+          >개인정보 처리방침에 동의합니다.</label
+        >
+      </div>
+
+      <div class="d-grid">
+        <button class="btn btn-dark text-white" type="submit">Register</button>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}

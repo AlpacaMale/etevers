@@ -1,0 +1,52 @@
+{% extends "layout.html" %} {% block body %}
+<main
+  class="container content d-flex align-items-center justify-content-center"
+>
+  <div class="border border-3 border-dark rounded p-5">
+    <form action="/input" method="post">
+      <div class="mb-3">
+        <label class="form-label" for="date">몇일에 먹었나요?</label>
+        <input
+          name="date"
+          required
+          type="date"
+          value="{{ date }}"
+          class="form-control"
+          id="date"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="time">언제 먹었나요?</label>
+        <select class="form-select" name="time" id="time">
+          {% for value in time %}
+          <option value="{{value}}">{{value}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="food">무엇을 먹었나요?</label>
+        <input
+          class="form-control"
+          type="food"
+          name="food"
+          required
+          id="food"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="amount">얼마나 먹었나요?</label>
+        <input
+          class="form-control"
+          type="amount"
+          name="amount"
+          required
+          id="amount"
+        />
+      </div>
+      <div class="d-grid">
+        <button class="btn btn-dark text-white" type="submit">확인</button>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}
