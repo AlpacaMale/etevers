@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
-import datetime
+from datetime import date as dt_date
 from config import Config
-from models import db, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, Weight
+from models import db, time, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, Weight
 
 # from flask_session import Session
 
@@ -72,19 +72,20 @@ def input():
     if request.method == "POST":
         meal_plan = request.form.to_dict()
         print(meal_plan)
-        
+
+        # 음식의 양에 대한 레코드가 추가되어야함
+        new_meal_plan = MealPlanItem(date=meal_plan.get('date'), meal_time=meal_plan.get('time'),food_item=meal_plan.get('food'))
+        db.add(new_meal_plan)
+        db.commit()
         
         # 밀 플랜을 받아서 meal plan item 테이블에 쓰기
         return redirect("/main")
     else:
         if session.get("date") is None:
-            date = datetime.date.today().strftime("%Y-%m-%d")
+            date = dt_date.today().strftime("%Y-%m-%d")
         else:
             date = session.get("date")
-        email = session.get("email")
-        
-        #time을 받아와서 time 종류에 뭐가있는지를 보고 인풋 드롭박스 아침점심저녁런치 목록 표시할수있게 그걸 찾아내기
-        return render_template("input.html",email=email, time=time, date=date)
+        return render_template("input.html", time=time, date=date)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -144,7 +145,7 @@ def main():
         return redirect("/main")
     else:
         if session.get("date") is None:
-            date = datetime.date.today().strftime("%Y-%m-%d")
+            date = dt_date.today().strftime("%Y-%m-%d")
         else:
             date = session.get("date")
         email = session.get("email")

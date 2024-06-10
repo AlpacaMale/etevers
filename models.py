@@ -48,7 +48,8 @@ class MealPlan(db.Model):
     users_user = db.relationship('User', primaryjoin='MealPlan.users_user_id == User.user_id', backref='meal_plans')
 
 
-
+# 음식의 양에 대한 레코드가 추가되어야함
+# meal 플랜에 대한것이 외래키?
 class MealPlanItem(db.Model):
     __tablename__ = 'meal_plan_items'
 
@@ -111,3 +112,5 @@ class Weight(User):
     users_user_id = db.Column(db.ForeignKey('users.user_id'), primary_key=True, index=True)
     weight = db.Column(db.Numeric(5, 2), nullable=False)
     date = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
+
+time = ['breakfast', 'lunch', 'dinner', 'snack']
