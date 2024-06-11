@@ -1,33 +1,23 @@
+# webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify
-from function import login_required, get_db, teardown_request
-import datetime
-
-##############sql######################
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-
-# 데이터베이스 연결 URL을 설정합니다.
-# 형식: 'mysql+pymysql://<username>:<password>@<host>/<dbname>'
-
-DATABASE_URL = 'mysql+pymysql://user1:root@localhost/mydb'
-
-# SQLAlchemy 엔진 생성
-engine = create_engine(DATABASE_URL)
-db_session = scoped_session(sessionmaker(bind=engine))
-#######################################
+from function import login_required, get_db, teardown_request, error
+from datetime import date as dt_date
+from config import Config
+from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
 
 # from flask_session import Session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.config.from_object(Config)
+db.init_app(app)
 
 @app.before_request
 def before_request():
-    get_db(db_session)
+    get_db()
 
 @app.teardown_request
 def teardown(exception):
-    teardown_request(exception, db_session)
+    teardown_request(exception)
 
 @app.route("/", methods=["GET","POST"])
 def get_started():
@@ -79,59 +69,39 @@ def change_password():
 @app.route("/input", methods=["GET", "POST"])
 @login_required
 def input():
+    db = get_db()
     if request.method == "POST":
         meal_plan = request.form.to_dict()
         print(meal_plan)
-        
-        mid = 1
-        with open(meal_plan_file_path, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                mid = mid + 1
 
-        email = session.get("email")
-        new_row = [str(mid), email, meal_plan['date'], meal_plan['time'],meal_plan['food'],meal_plan['amount']]
-        with open(meal_plan_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(new_row)
+        # 음식의 양에 대한 레코드가 추가되어야함
+        new_meal_plan = MealPlanItem(date=meal_plan.get('date'), meal_time=meal_plan.get('time'),food_item=meal_plan.get('food'))
+        db.add(new_meal_plan)
+        db.commit()
+        
+        # 밀 플랜을 받아서 meal plan item 테이블에 쓰기
         return redirect("/main")
     else:
         if session.get("date") is None:
-            date = datetime.date.today().strftime("%Y-%m-%d")
+            date = dt_date.today().strftime("%Y-%m-%d")
         else:
             date = session.get("date")
-        email = session.get("email")
-        time = []
-        with open(time_file_path, mode='r', newline='') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    time+=row
-        return render_template("input.html",email=email, time=time, date=date)
+        return render_template("input.html", time=time, date=date)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-
+        db = get_db()
         login_data = request.form.to_dict()
         email = login_data.get("email")
         password = login_data.get("password")
 
-
-        user_found = False
-        with open(user_data_file_path, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-    
-        # 각 행을 순회하며 조건에 맞는 행 찾기
-            for row in reader:
-                if row['email'] == email and row["password"] == password:
-                    user_found = True
-                    session['email'] = email
-                    break
+        if not db.query(User).filter_by(email=email, password=password).first():
+            return error(401)
         
-        if user_found == True:
-            return redirect("/main")
-        else:
-            return redirect("/login")
+        session['email'] = email
+        
+        return redirect("/main")
         
         #원래 가려고 했던 페이지를 세션에서 받아와서 리디렉션하는 로직
 
@@ -146,32 +116,36 @@ def logout():
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
+        db = get_db()
         register_data = request.form.to_dict()
+        print(register_data)
         email = register_data.get("email")
-        
-        uid = 1
-        with open(user_data_file_path, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                if row.get("email") == email:
-                    return redirect("/register")
-                uid = uid + 1
-                
+        if db.query(User).filter_by(email=email).first():
+            return error(400)
+
         password = register_data.get("password")
         password_confirm = register_data.get("password-confirm")
 
         if password != password_confirm:
-            return redirect("/register")
+            return error(400)
+        
+        new_user = User(email=email, password=password)
+        db.add(new_user)
+        # 회원가입 로직
 
-        new_row = [ str(uid), email, password]
-        with open(user_data_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(new_row)
+        height = register_data.get("height")
+        weight = register_data.get("weight")
+        user_sex = register_data.get("sex")
+        dietary_belief = register_data.get("dietary_belief")
+        exercise_frequency = register_data.get("exercise_frequency")
+        new_user_profile = UserProfile(height=height, weight=weight, sex=user_sex, dietary_belief=dietary_belief, exercise_frequency=exercise_frequency, users_email=email)
+        db.add(new_user_profile)
+        db.commit()
         
         return redirect("/")
 
     else:
-        return render_template("register.html")
+        return render_template("register.html" , sex=sex)
 
 @app.route("/main", methods=["GET","POST"])
 @login_required
@@ -181,24 +155,17 @@ def main():
         return redirect("/main")
     else:
         if session.get("date") is None:
-            date = datetime.date.today().strftime("%Y-%m-%d")
+            date = dt_date.today().strftime("%Y-%m-%d")
         else:
             date = session.get("date")
         email = session.get("email")
 
         user_meal_plan = []
-        with open(meal_plan_file_path, mode='r', newline='') as file:
-                reader = csv.DictReader(file)
-                for row in reader:
-                    if row.get("email") == email and row.get("date") == date:
-                        user_meal_plan.append(row)
+        # 유저 밀플랜을 받아서 
         print(user_meal_plan)
 
         time = []
-        with open(time_file_path, mode='r', newline='') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    time += row
+        # 타임별로(아침점심저녁)분류해서 프론트에 쏴줄데이터를 완성하는 로직
         print(time)
 
         user_meal_data = {}
