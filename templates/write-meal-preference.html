@@ -1,0 +1,97 @@
+{% extends "layout.html" %} {% block body %}
+<main
+  class="container content d-flex align-items-center justify-content-center"
+>
+  <div class="border border-3 border-dark rounded p-5">
+    <p class="text-center fw-bold fs-4">Let us know your preference</p>
+    <form
+      action="/write-meal-preference"
+      onsubmit="return validateForm()"
+      method="post"
+    >
+      <div class="mb-3">
+        <label class="form-label" for="food_item"
+          >무엇을 먹는걸 선호하나요</label
+        >
+        <input
+          class="form-control"
+          type="food_item"
+          name="food_item"
+          required
+          id="food_item"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="frequency_min"
+          >일주일에 최소 N회 먹고싶습니다.</label
+        >
+        <input
+          class="form-control"
+          type="number"
+          name="frequency_min"
+          required
+          id="frequency_min"
+          min="1"
+          max="35"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="frequency_max"
+          >일주일에 최대 N회 먹고싶습니다.</label
+        >
+        <input
+          class="form-control"
+          type="number"
+          name="frequency_max"
+          required
+          id="frequency_max"
+          min="1"
+          max="35"
+        />
+      </div>
+      <div class="d-grid">
+        <button class="btn btn-dark text-white" type="submit">Edit</button>
+      </div>
+    </form>
+  </div>
+</main>
+<!-- <script>
+  function validateForm() {
+    const frequency_minInput = document.getElementById("frequency_min");
+    const frequency_maxInput = document.getElementById("frequency_max");
+    const min = parseFloat(frequency_minInput.value);
+    const max = parseFloat(frequency_maxInput.value);
+    const errorElement = document.getElementById("error");
+
+    if (min > max) {
+      errorElement.textContent = "최소치보다 최대치가 커야합니다.";
+      return false;
+    }
+
+    errorElement.textContent = "";
+    return true;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const frequency_minInput = document.getElementById("min");
+    const frequency_maxInput = document.getElementById("max_weight");
+
+    function validateInputs() {
+      const min = parseFloat(frequency_minInput.value);
+      const max = parseFloat(frequency_maxInput.value);
+      const errorElement = document.getElementById("error");
+
+      if (min > max) {
+        errorElement.textContent = "최소치보다 최대치가 커야합니다.";
+        frequency_minInput.setCustomValidity("최소치보다 최대치가 커야합니다.");
+      } else {
+        errorElement.textContent = "";
+        frequency_minInput.setCustomValidity("");
+      }
+    }
+
+    frequency_minInput.addEventListener("input", validateInputs);
+    frequency_maxInput.addEventListener("input", validateInputs);
+  });
+</script> -->
+{% endblock %}

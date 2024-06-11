@@ -2,11 +2,17 @@ blinker==1.8.2
 click==8.1.7
 colorama==0.4.6
 Flask==3.0.3
+flask-sqlacodegen==2.0.0
+Flask-SQLAlchemy==3.1.1
 greenlet==3.0.3
+inflect==7.2.1
 itsdangerous==2.2.0
 Jinja2==3.1.4
 MarkupSafe==2.1.5
+more-itertools==10.2.0
+mysqlclient==2.2.4
 PyMySQL==1.1.1
 SQLAlchemy==2.0.30
+typeguard==4.3.0
 typing_extensions==4.12.1
 Werkzeug==3.0.3

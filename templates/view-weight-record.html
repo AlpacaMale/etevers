@@ -1,0 +1,31 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5">
+    <p class="fw-bold fs-1">나의 무게</p>
+    <p class="fs-5">오늘의 무게를 등록하세요</p>
+  </div>
+</main>
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4">너의 무게</p>
+        </div>
+        <div class="col text-end">
+          <a href="/write-weight-record" class="btn btn-dark text-white">+</a>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        {% if weight_datas is not none and weight_datas|length > 0 %} {% for
+        weight_data in weight_datas %}
+        <p class="fs-4">{{ weight_data['date'].strftime('%Y-%m-%d') }}</p>
+        <p class="fw-bold fs-3">{{ weight_data['weight'] }} kg</p>
+        {% endfor%} {% else %}
+        <p class="fw-bold fs-3">무게를 등록하세요</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
