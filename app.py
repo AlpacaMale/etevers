@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
 from datetime import date as dt_date
 from config import Config
-from models import db, time, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
+from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
 
 # from flask_session import Session
 
@@ -118,6 +118,7 @@ def register():
     if request.method == "POST":
         db = get_db()
         register_data = request.form.to_dict()
+        print(register_data)
         email = register_data.get("email")
         if db.query(User).filter_by(email=email).first():
             return error(400)
@@ -130,13 +131,21 @@ def register():
         
         new_user = User(email=email, password=password)
         db.add(new_user)
-        db.commit()
         # 회원가입 로직
+
+        height = register_data.get("height")
+        weight = register_data.get("weight")
+        user_sex = register_data.get("sex")
+        dietary_belief = register_data.get("dietary_belief")
+        exercise_frequency = register_data.get("exercise_frequency")
+        new_user_profile = UserProfile(height=height, weight=weight, sex=user_sex, dietary_belief=dietary_belief, exercise_frequency=exercise_frequency, users_email=email)
+        db.add(new_user_profile)
+        db.commit()
         
         return redirect("/")
 
     else:
-        return render_template("register.html")
+        return render_template("register.html" , sex=sex)
 
 @app.route("/main", methods=["GET","POST"])
 @login_required
