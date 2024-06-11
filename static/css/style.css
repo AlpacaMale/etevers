@@ -6,26 +6,48 @@
 	src: url('../fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
+body{
+    font-family: 'Pretendard Variable';
+    background-color: #fec422;
+}
 
 #index_bg{
-    object-fit: cover;
     background-image: url(../images/bg.png);
-    /* background-size: cover; */
     background-repeat: no-repeat;
+    background-position: center;
 }
 
 .navbar{
-    --bs-navbar-padding-y: 1rem;
+    --bs-navbar-padding-y: 0.8rem;
 }
 
 .left-box{
     text-align: left;
 }
 
-.left-box .text{
+.left-box .text-top{
     font-family: 'Pretendard Variable';
     font-weight: bold;
     font-size: 56px;
-    margin-bottom: 50px;
     line-height: 80px;
+}
+
+.left-box .text-bottom{
+    font-family: 'Pretendard Variable';
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 34px;
+    margin-bottom: 50px;
+}
+
+
+.start-btn:link{
+    text-decoration: none;
+}
+
+.start-btn{
+    font-family: 'Pretendard Variable';
+    color: black;
+    border: 1px solid black;
+    padding: 14px 38px;
 }
