@@ -1,7 +1,7 @@
 # webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
-from datetime import date as dt_date, strptime, timedelta
+from datetime import date as dt_date, timedelta
 from config import Config
 from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
 from sqlalchemy import asc, desc
@@ -218,7 +218,7 @@ def make_meal_plan():
     db = get_db()
     email = session.get("email")
     meal_plan_start_date = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().start_date
-    if not meal_plan_start_date or dt_date.today() - strptime(meal_plan_start_date.start_date, "%Y-%m-%d") > timedelta(days=7):
+    if not meal_plan_start_date or dt_date.today() - dt_date.strptime(meal_plan_start_date.start_date, "%Y-%m-%d") > timedelta(days=7):
         new_meal_plan = MealPlan(users_email=email, start_date=dt_date.today().strftime("%Y-%m-%d"))
         db.add(new_meal_plan)
         db.commit()
@@ -243,7 +243,7 @@ def main():
     else:
         email = session.get("email")
         meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
-        if not meal_plan or dt_date.today() - strptime(meal_plan.start_date, "%Y-%m-%d") > timedelta(days=7):
+        if not meal_plan or dt_date.today() - dt_date.strptime(meal_plan.start_date, "%Y-%m-%d") > timedelta(days=7):
             return redirect("/make-meal-plan")
         
         if session.get("date") is None:
@@ -268,8 +268,6 @@ def main():
         print(user_meal_data)
 
         return render_template("main.html", user_meal_data=user_meal_data,date=date)
-
-
 
 @app.route('/contents/aws')
 def health():
