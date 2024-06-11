@@ -8,10 +8,11 @@
 
 
 #index_bg{
-    object-fit: cover;
+    /* object-fit: cover; */
+    background-size: cover;
     background-image: url(../images/bg.png);
-    /* background-size: cover; */
     background-repeat: no-repeat;
+    background-position: center;
 }
 
 .navbar{
