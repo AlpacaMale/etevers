@@ -1,0 +1,34 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5">
+    <p class="fw-bold fs-1">나의 선호</p>
+    <p class="fs-5">너의 선호를 등록하세요</p>
+  </div>
+</main>
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4">너의 선호</p>
+        </div>
+        <div class="col text-end">
+          <a href="/write-meal-preference" class="btn btn-dark text-white">+</a>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        {% if preference_datas is not none and preference_datas|length > 0 %} {%
+        for preference_data in preference_datas %}
+        <p class="fs-4">
+          {{ preference_data['food_item'] }}을 일주일에 {{
+          preference_data['frequency_min'] }}~{{
+          preference_data['frequency_max'] }}번 먹고싶습니다.
+        </p>
+        {% endfor %} {% else %}
+        <p class="fw-bold fs-3">선호를 등록하세요</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

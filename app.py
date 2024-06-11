@@ -155,9 +155,7 @@ def view_weight_record():
     db = get_db()
     weight_datas = db.query(WeightRecord).filter_by(users_email=email).order_by(asc(WeightRecord.date)).all()
     for weight_data in weight_datas:
-        print(weight_data.users_email)
-        print(weight_data.date)
-        print(weight_data.weight)
+        print(weight_data.users_email, weight_data.date, weight_data.weight)
     return render_template("view-weight-record.html", weight_datas=weight_datas)
 
 @app.route("/write-weight-record", methods=["GET","POST"])
@@ -180,6 +178,38 @@ def write_weight_record():
     else:
         date = dt_date.today().strftime("%Y-%m-%d")
         return render_template("write-weight-record.html", date=date)
+    
+@app.route("/view-meal-preference", methods=["GET"])
+@login_required
+def view_meal_preference():
+    email = session.get("email")
+    db = get_db()
+    preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
+    for preference_data in preference_datas:
+        print(preference_data.food_item, preference_data.frequency_min, preference_data.frequency_max)
+    return render_template("view-meal-preference.html", preference_datas=preference_datas)
+
+@app.route("/write-meal-preference", methods=["GET","POST"])
+@login_required
+def write_meal_preference():
+    if request.method == "POST":
+        db = get_db()
+        preference_data_data = request.form.to_dict()
+        print(preference_data_data)
+        email = session.get("email")
+        food_item = preference_data_data.get('food_item')
+        frequency_min = preference_data_data.get('frequency_min')
+        frequency_max = preference_data_data.get('frequency_max')
+        
+        new_preference = MealPreference(users_email=email, food_item=food_item, frequency_min=frequency_min, frequency_max=frequency_max)
+        db.add(new_preference)
+        db.commit()
+        
+        return redirect("/view-meal-preference")
+
+    else:
+        date = dt_date.today().strftime("%Y-%m-%d")
+        return render_template("write-meal-preference.html", date=date)
     
 @app.route("/main", methods=["GET","POST"])
 @login_required

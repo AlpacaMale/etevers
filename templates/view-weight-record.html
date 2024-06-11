@@ -17,7 +17,8 @@
         </div>
       </div>
       <div class="mb-3 p-4 bg-body-secondary">
-        {% if weight_data is not none %} {% for weight_data in weight_datas %}
+        {% if weight_datas is not none and weight_datas|length > 0 %} {% for
+        weight_data in weight_datas %}
         <p class="fs-4">{{ weight_data['date'].strftime('%Y-%m-%d') }}</p>
         <p class="fw-bold fs-3">{{ weight_data['weight'] }} kg</p>
         {% endfor%} {% else %}
