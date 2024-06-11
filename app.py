@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, jsonify
-from function import login_required, get_db, teardown_request
+from function import login_required, get_db, teardown_request, error
 import datetime
 
 ##############sql######################
@@ -83,17 +83,7 @@ def input():
         meal_plan = request.form.to_dict()
         print(meal_plan)
         
-        mid = 1
-        with open(meal_plan_file_path, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                mid = mid + 1
-
-        email = session.get("email")
-        new_row = [str(mid), email, meal_plan['date'], meal_plan['time'],meal_plan['food'],meal_plan['amount']]
-        with open(meal_plan_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(new_row)
+        # 밀 플랜을 받아서 meal plan item 테이블에 쓰기
         return redirect("/main")
     else:
         if session.get("date") is None:
@@ -101,11 +91,8 @@ def input():
         else:
             date = session.get("date")
         email = session.get("email")
-        time = []
-        with open(time_file_path, mode='r', newline='') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    time+=row
+        
+        #time을 받아와서 time 종류에 뭐가있는지를 보고 인풋 드롭박스 아침점심저녁런치 목록 표시할수있게 그걸 찾아내기
         return render_template("input.html",email=email, time=time, date=date)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -118,15 +105,7 @@ def login():
 
 
         user_found = False
-        with open(user_data_file_path, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-    
-        # 각 행을 순회하며 조건에 맞는 행 찾기
-            for row in reader:
-                if row['email'] == email and row["password"] == password:
-                    user_found = True
-                    session['email'] = email
-                    break
+        #db에서 로그인 데이터를 불러와서 맞으면 세션로그인 하는 로직
         
         if user_found == True:
             return redirect("/main")
@@ -149,24 +128,7 @@ def register():
         register_data = request.form.to_dict()
         email = register_data.get("email")
         
-        uid = 1
-        with open(user_data_file_path, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                if row.get("email") == email:
-                    return redirect("/register")
-                uid = uid + 1
-                
-        password = register_data.get("password")
-        password_confirm = register_data.get("password-confirm")
-
-        if password != password_confirm:
-            return redirect("/register")
-
-        new_row = [ str(uid), email, password]
-        with open(user_data_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(new_row)
+        # 회원가입 로직
         
         return redirect("/")
 
@@ -187,18 +149,11 @@ def main():
         email = session.get("email")
 
         user_meal_plan = []
-        with open(meal_plan_file_path, mode='r', newline='') as file:
-                reader = csv.DictReader(file)
-                for row in reader:
-                    if row.get("email") == email and row.get("date") == date:
-                        user_meal_plan.append(row)
+        # 유저 밀플랜을 받아서 
         print(user_meal_plan)
 
         time = []
-        with open(time_file_path, mode='r', newline='') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    time += row
+        # 타임별로(아침점심저녁)분류해서 프론트에 쏴줄데이터를 완성하는 로직
         print(time)
 
         user_meal_data = {}
