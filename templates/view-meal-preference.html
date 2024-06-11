@@ -20,7 +20,7 @@
         {% if preference_datas is not none and preference_datas|length > 0 %} {%
         for preference_data in preference_datas %}
         <p class="fs-4">
-          {{ preference_data['food_item'] }}을 일주일에 {{
+          {{ preference_data['food_item'] }}를 일주일에 {{
           preference_data['frequency_min'] }}~{{
           preference_data['frequency_max'] }}번 먹고싶습니다.
         </p>
