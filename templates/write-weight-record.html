@@ -1,0 +1,39 @@
+{% extends "layout.html" %} {% block body %}
+<main
+  class="container content d-flex align-items-center justify-content-center"
+>
+  <div class="border border-3 border-dark rounded p-5">
+    <p class="text-center fw-bold fs-4">Record your weight</p>
+    <form action="/write-weight-record" method="post">
+    <div class="mb-3">
+        <label class="form-label" for="date">언제 무게를 쟀나요?</label>
+        <input
+            name="date"
+            required
+            type="date"
+            value="{{ date }}"
+            class="form-control"
+            id="date"
+        />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="weight"
+          >weight</label
+        >
+        <input
+          class="form-control"
+          type="number"
+          name="weight"
+          required
+          id="weight"
+          step="0.01"
+          min="0"
+          max="999.99"
+        />
+    </div>
+    <div class="d-grid">
+        <button class="btn btn-dark text-white" type="submit">Register</button>
+    </div>
+    </form>
+</main>
+{% endblock %}

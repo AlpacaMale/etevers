@@ -4,6 +4,7 @@ from function import login_required, get_db, teardown_request, error
 from datetime import date as dt_date
 from config import Config
 from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
+from sqlalchemy import asc
 
 # from flask_session import Session
 
@@ -147,6 +148,39 @@ def register():
     else:
         return render_template("register.html" , sex=sex)
 
+@app.route("/view-weight-record", methods=["GET"])
+@login_required
+def view_weight_record():
+    email = session.get("email")
+    db = get_db()
+    weight_datas = db.query(WeightRecord).filter_by(users_email=email).order_by(asc(WeightRecord.date)).all()
+    for weight_data in weight_datas:
+        print(weight_data.users_email)
+        print(weight_data.date)
+        print(weight_data.weight)
+    return render_template("view-weight-record.html", weight_datas=weight_datas)
+
+@app.route("/write-weight-record", methods=["GET","POST"])
+@login_required
+def write_weight_record():
+    if request.method == "POST":
+        db = get_db()
+        weight_data = request.form.to_dict()
+        print(weight_data)
+        email = session.get("email")
+        weight = weight_data.get('weight')
+        date = weight_data.get('date')
+        
+        new_weight = WeightRecord(users_email=email, weight=weight, date=date)
+        db.add(new_weight)
+        db.commit()
+        
+        return redirect("/view-weight-record")
+
+    else:
+        date = dt_date.today().strftime("%Y-%m-%d")
+        return render_template("write-weight-record.html", date=date)
+    
 @app.route("/main", methods=["GET","POST"])
 @login_required
 def main():
