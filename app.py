@@ -1,10 +1,10 @@
 # webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
-from datetime import date as dt_date
+from datetime import date as dt_date, strptime, timedelta
 from config import Config
 from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
-from sqlalchemy import asc
+from sqlalchemy import asc, desc
 
 # from flask_session import Session
 
@@ -72,12 +72,13 @@ def change_password():
 def input():
     db = get_db()
     if request.method == "POST":
-        meal_plan = request.form.to_dict()
-        print(meal_plan)
+        meal_plan_items = request.form.to_dict()
+        print(meal_plan_items)
+        
 
         # 음식의 양에 대한 레코드가 추가되어야함
-        new_meal_plan = MealPlanItem(date=meal_plan.get('date'), meal_time=meal_plan.get('time'),food_item=meal_plan.get('food'))
-        db.add(new_meal_plan)
+        new_meal_plan_items = MealPlanItem(date=meal_plan_items.get('date'), meal_time=meal_plan_items.get('time'),food_item=meal_plan_items.get('food'))
+        db.add(new_meal_plan_items)
         db.commit()
         
         # 밀 플랜을 받아서 meal plan item 테이블에 쓰기
@@ -210,6 +211,28 @@ def write_meal_preference():
     else:
         date = dt_date.today().strftime("%Y-%m-%d")
         return render_template("write-meal-preference.html", date=date)
+
+@app.route("/make-meal-plan", methods=["GET"])
+@login_required
+def make_meal_plan():
+    db = get_db()
+    email = session.get("email")
+    meal_plan_start_date = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().start_date
+    if not meal_plan_start_date or dt_date.today() - strptime(meal_plan_start_date.start_date, "%Y-%m-%d") > timedelta(days=7):
+        new_meal_plan = MealPlan(users_email=email, start_date=dt_date.today().strftime("%Y-%m-%d"))
+        db.add(new_meal_plan)
+        db.commit()
+
+        meal_plan_id = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().id
+
+        for day in range(0, 6):
+            date = dt_date.today()+timedelta(days=day)
+            date = date.strftime("%Y-%m-%d")
+            new_meal_plan_item = MealPlanItem(users_email=email, id=meal_plan_id, date=date, meal_time='lunch', food_item='potato 150gram')
+            db.add(new_meal_plan_item)
+            db.commit()
+
+    return redirect("/")
     
 @app.route("/main", methods=["GET","POST"])
 @login_required
@@ -218,11 +241,15 @@ def main():
         session['date'] = request.form.get("date")
         return redirect("/main")
     else:
+        email = session.get("email")
+        meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
+        if not meal_plan or dt_date.today() - strptime(meal_plan.start_date, "%Y-%m-%d") > timedelta(days=7):
+            return redirect("/make-meal-plan")
+        
         if session.get("date") is None:
             date = dt_date.today().strftime("%Y-%m-%d")
         else:
             date = session.get("date")
-        email = session.get("email")
 
         user_meal_plan = []
         # 유저 밀플랜을 받아서 
@@ -241,6 +268,8 @@ def main():
         print(user_meal_data)
 
         return render_template("main.html", user_meal_data=user_meal_data,date=date)
+
+
 
 @app.route('/contents/aws')
 def health():

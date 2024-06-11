@@ -2,7 +2,7 @@
 <main class="container" style="width: 80%">
   <div class="p-5">
     <p class="fw-bold fs-1">나의 식단</p>
-    <p class="fs-5">오늘의 식사를 등록하세요</p>
+    <p class="fs-5">오늘의 식사입니다.</p>
     <form action="/main" method="post">
       <div class="input-group">
         <input
@@ -19,52 +19,41 @@
 </main>
 <main class="container" style="width: 80%">
   <div class="p-5 pt-0">
-  <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
-    <p class="fs-5">{{ date }}</p>
-    <div class="mb-3" style="border: 1px solid black"></div>
-    <div class="row">
-      <div class="col">
-        <p class="fw-bold fs-4">today's meal</p>
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <p class="fs-5">{{ date }}</p>
+      <div class="mb-3" style="border: 1px solid black"></div>
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4">AI 추천 식단</p>
+        </div>
+        <div class="col text-end">
+          <a href="/input" class="btn btn-dark text-white">+</a>
+        </div>
       </div>
-      <div class="col text-end">
-        <a href="/input" class="btn btn-dark text-white">+</a>
+      <div class="mb-3 p-4 bg-body-secondary">
+        {% if user_meal_data.get('breakfast') is not none %}
+        <p class="fw-bold fs-3">breakfast</p>
+        {% endif %} {% for meal in user_meal_data['breakfast'] %}
+        <p class="fs-4">{{ meal }}</p>
+        {% endfor%} {% if user_meal_data.get('launch') is not none %}
+        <p class="fw-bold fs-3">launch</p>
+        {% endif %} {% for meal in user_meal_data['launch'] %}
+        <p class="fs-4">{{ meal }}</p>
+        {% endfor%} {% if user_meal_data.get('dinner') is not none %}
+        <p class="fw-bold fs-3">dinner</p>
+        {% endif %} {% for meal in user_meal_data['dinner'] %}
+        <p class="fs-4">{{ meal }}</p>
+        {% endfor%} {% if user_meal_data.get('snack') is not none %}
+        <p class="fw-bold fs-3">snack</p>
+        {% endif %} {% for meal in user_meal_data['snack'] %}
+        <p class="fs-4">{{ meal }}</p>
+        {% endfor%}
       </div>
-    </div>
-    <div class="mb-3 p-4 bg-body-secondary">
-
-      {% if user_meal_data.get('breakfast') is not none %}
-      <p class="fw-bold fs-3">breakfast</p>
-      {% endif %}
-      {% for meal in user_meal_data['breakfast'] %}
-      <p class="fs-4">{{ meal }}</p>
-      {% endfor%}
-      
-      {% if user_meal_data.get('launch') is not none %}
-      <p class="fw-bold  fs-3">launch</p>
-      {% endif %}
-      {% for meal in user_meal_data['launch'] %}
-      <p class="fs-4">{{ meal }}</p>
-      {% endfor%}
-
-      {% if user_meal_data.get('dinner') is not none %}
-      <p class="fw-bold  fs-3">dinner</p>
-      {% endif %}
-      {% for meal in user_meal_data['dinner'] %}
-      <p class="fs-4">{{ meal }}</p>
-      {% endfor%}
-
-      {% if user_meal_data.get('snack') is not none %}
-      <p class="fw-bold  fs-3">snack</p>
-      {% endif %}
-      {% for meal in user_meal_data['snack'] %}
-      <p class="fs-4">{{ meal }}</p>
-      {% endfor%}
-    </div>
-    <p class="fw-bold fs-4">AI 추천 식단</p>
-    <div class="mb-3 p-4 bg-body-secondary">
-      <p class="fs-3">식단을 등록 안했잖아</p>
+      <p class="fw-bold fs-4">ㄹㅇㄴㅁㄹㅇㄴ</p>
+      <div class="mb-3 p-4 bg-body-secondary">
+        <p class="fs-3">식단을 등록 안했잖아</p>
+      </div>
     </div>
   </div>
-</div>
 </main>
 {% endblock %}
