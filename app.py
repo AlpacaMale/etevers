@@ -1,7 +1,7 @@
 # webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
-from datetime import date as dt_date, timedelta
+from datetime import date as dt_date, timedelta, datetime
 from config import Config
 from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
 from sqlalchemy import asc, desc
@@ -217,18 +217,18 @@ def write_meal_preference():
 def make_meal_plan():
     db = get_db()
     email = session.get("email")
-    meal_plan_start_date = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().start_date
-    if not meal_plan_start_date or dt_date.today() - dt_date.strptime(meal_plan_start_date.start_date, "%Y-%m-%d") > timedelta(days=7):
+    meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
+    if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
         new_meal_plan = MealPlan(users_email=email, start_date=dt_date.today().strftime("%Y-%m-%d"))
         db.add(new_meal_plan)
         db.commit()
 
         meal_plan_id = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().id
 
-        for day in range(0, 6):
-            date = dt_date.today()+timedelta(days=day)
+        for day in range(0, 7):
+            date = dt_date.today() + timedelta(days=day)
             date = date.strftime("%Y-%m-%d")
-            new_meal_plan_item = MealPlanItem(users_email=email, id=meal_plan_id, date=date, meal_time='lunch', food_item='potato 150gram')
+            new_meal_plan_item = MealPlanItem(meal_plan_id=meal_plan_id, date=date, meal_time='lunch', food_item='potato 150gram')
             db.add(new_meal_plan_item)
             db.commit()
 
@@ -241,9 +241,10 @@ def main():
         session['date'] = request.form.get("date")
         return redirect("/main")
     else:
+        db = get_db()
         email = session.get("email")
         meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
-        if not meal_plan or dt_date.today() - dt_date.strptime(meal_plan.start_date, "%Y-%m-%d") > timedelta(days=7):
+        if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
             return redirect("/make-meal-plan")
         
         if session.get("date") is None:
