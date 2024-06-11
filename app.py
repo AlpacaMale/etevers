@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
 from datetime import date as dt_date
 from config import Config
-from models import db, time, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, Weight
+from models import db, time, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
 
 # from flask_session import Session
 
