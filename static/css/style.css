@@ -6,13 +6,10 @@
 	src: url('../fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
-<<<<<<< HEAD
-=======
 .content {
   height: calc(100vh - 66.4px); /* 56px은 기본 네비게이션 바 높이 */
 }
 
->>>>>>> main
 body{
     font-family: 'Pretendard Variable';
     background-color: #fec422;
@@ -57,13 +54,10 @@ body{
     color: black;
     border: 1px solid black;
     padding: 14px 38px;
-<<<<<<< HEAD
-=======
 }
 
 input::-webkit-inner-spin-button {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
->>>>>>> main
 }
