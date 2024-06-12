@@ -1,0 +1,21 @@
+node {
+    stage('저장소 클론') {
+        checkout scm
+    }
+
+    stage('이미지 빌드') {
+        app = docker.build("471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/eks-project")
+    }
+
+    stage('이미지 푸시') {
+        // 현재 사용자 도커 자격 증명 정리
+        sh 'rm ~/.dockercfg || true'
+        sh 'rm ~/.docker/config.json || true'
+        
+        // 레지스트리 구성 및 이미지 푸시
+        docker.withRegistry('https://471112869272.dkr.ecr.ap-northeast-2.amazonaws.com', 'ecr:ap-northeast-2:aws-ECR') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
+    }
+}
