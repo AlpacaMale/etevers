@@ -270,6 +270,6 @@ def main():
 
         return render_template("main.html", user_meal_data=user_meal_data,date=date)
 
-@app.route('/contents/aws')
+@app.route('/health')
 def health():
     return jsonify({'status': 'ok'}), 200
