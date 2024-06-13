@@ -212,27 +212,32 @@ def write_meal_preference():
         date = dt_date.today().strftime("%Y-%m-%d")
         return render_template("write-meal-preference.html", date=date)
 
-@app.route("/make-meal-plan", methods=["GET"])
+@app.route("/make-meal-plan", methods=["GET", "POST"])
 @login_required
 def make_meal_plan():
     db = get_db()
-    email = session.get("email")
-    meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
-    if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
-        new_meal_plan = MealPlan(users_email=email, start_date=dt_date.today().strftime("%Y-%m-%d"))
-        db.add(new_meal_plan)
-        db.commit()
-
-        meal_plan_id = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().id
-
-        for day in range(0, 7):
-            date = dt_date.today() + timedelta(days=day)
-            date = date.strftime("%Y-%m-%d")
-            new_meal_plan_item = MealPlanItem(meal_plan_id=meal_plan_id, date=date, meal_time='lunch', food_item='potato 150gram')
-            db.add(new_meal_plan_item)
+    if request.method == "POST":
+        email = session.get("email")
+        meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
+        if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
+            new_meal_plan = MealPlan(users_email=email, start_date=dt_date.today().strftime("%Y-%m-%d"))
+            db.add(new_meal_plan)
             db.commit()
 
-    return redirect("/")
+            meal_plan_id = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().id
+
+            for day in range(0, 7):
+                date = dt_date.today() + timedelta(days=day)
+                date = date.strftime("%Y-%m-%d")
+                new_meal_plan_item = MealPlanItem(meal_plan_id=meal_plan_id, date=date, meal_time='lunch', food_item='potato 150gram')
+                db.add(new_meal_plan_item)
+                db.commit()
+        return redirect("/")
+    else:
+        email = session.get("email")
+        user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+        print(user_profile.users_email, user_profile.height, user_profile.weight, user_profile.sex, user_profile.dietary_belief, user_profile.exercise_frequency)
+        return render_template("make-meal-plan.html", user_profile=user_profile)
     
 @app.route("/main", methods=["GET","POST"])
 @login_required
@@ -252,23 +257,22 @@ def main():
         else:
             date = session.get("date")
 
-        user_meal_plan = []
-        # 유저 밀플랜을 받아서 
-        print(user_meal_plan)
+        meal_plan_items = db.query(MealPlanItem).filter_by(meal_plan_id=meal_plan.id).all()
+        # 유저 밀플랜을 받아서
+        for meal_plan_item in meal_plan_items:
+            print(meal_plan_item.date, meal_plan_item.meal_time, meal_plan_item.food_item)
 
-        time = []
         # 타임별로(아침점심저녁)분류해서 프론트에 쏴줄데이터를 완성하는 로직
-        print(time)
+        
+        user_meal_datas = []
+        for meal_plan_item in meal_plan_items:
 
-        user_meal_data = {}
-        for user_meal_plan_row in user_meal_plan:
-            if user_meal_plan_row.get("time") not in user_meal_data:
-                user_meal_data[user_meal_plan_row.get("time")] = [user_meal_plan_row.get("food") + " " + user_meal_plan_row.get("amount")]
-            else:
-                user_meal_data[user_meal_plan_row.get("time")].append(user_meal_plan_row.get("food") + " " + user_meal_plan_row.get("amount"))
-        print(user_meal_data)
+            user_meal_data = {
+            'date': meal_plan_item.date,
+            'meal_time': meal_plan_item.meal_time
+            }
 
-        return render_template("main.html", user_meal_data=user_meal_data,date=date)
+        return render_template("main.html", user_meal_datas=user_meal_datas,date=date)
 
 @app.route('/health')
 def health():
