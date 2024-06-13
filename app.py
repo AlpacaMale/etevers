@@ -3,7 +3,8 @@ from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
 from datetime import date as dt_date, timedelta, datetime
 from config import Config
-from models import db, time, sex, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
+from models import db, time, sex, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord, ChatbotInteraction
+from create import create_meal_plan_items
 from sqlalchemy import asc, desc
 
 # from flask_session import Session
@@ -31,41 +32,79 @@ def get_started():
 def about_us():
     return render_template("about-us.html")
 
-@app.route("/week", methods=["GET"])
-def week():
-    #로그인 필요
-    #음식 업로드
-    #AI과 통신
-    return render_template("week.html")
-
-@app.route("/daily", methods=["GET"])
-def daily():
-    #로그인 필요
-    #음식 업로드
-    #AI과 통신
-    return render_template("daily.html")
-
 @app.route("/profile", methods=["GET"])
+@login_required
 def profile():
-    #로그인 필요
-    #회원 탈퇴
-    #비밀번호 변경
-    return render_template("profile.html")
+    db = get_db()
+    email = session.get("email")
+    user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+    user_info = db.query(User.created_at).filter_by(email=email).first()[0]
+    weight_datas = db.query(WeightRecord).filter_by(users_email=email).order_by(asc(WeightRecord.date)).all()
+    preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
 
-@app.route("/password-check", methods=["GET"])
-def password_check():
-    #비밀번호 확인하는 로직
-    return render_template("password-check.html")
+    for weight_data in weight_datas:
+        print(weight_data.users_email, weight_data.date, weight_data.weight)
+    for preference_data in preference_datas:
+        print(preference_data.food_item, preference_data.frequency_min, preference_data.frequency_max)
+    print(user_profile.users_email, user_profile.height, user_profile.weight, user_profile.sex, user_profile.dietary_belief, user_profile.exercise_frequency, user_info)
+    return render_template("profile.html", user_profile=user_profile, user_info=user_info, weight_datas=weight_datas, preference_datas=preference_datas)
 
-@app.route("/deregister", methods=["GET"])
+@app.route("/edit-user-profile", methods=["GET", "POST"])
+@login_required
+def edit_user_profile():
+    db = get_db()
+    email = session.get("email")
+    user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+    
+    if request.method == "POST":
+        edit_user_data = request.form.to_dict()
+        print(edit_user_data.get('height'), edit_user_data.get('weight'), edit_user_data.get('sex'), edit_user_data.get('dietary_belief'), edit_user_data.get('exercise_frequency'))
+
+        user_profile.height = edit_user_data.get("height")
+        date = dt_date.today()
+
+        weight_record = db.query(WeightRecord).filter_by(users_email=email, date=date).first()
+        weight = edit_user_data.get("weight")
+
+        if weight_record:
+            weight_record.weight = weight
+        else:
+            new_weight = WeightRecord(users_email=email, weight=weight, date=date)
+            db.add(new_weight)
+
+        user_profile.weight = weight
+        user_profile.sex = edit_user_data.get("sex")
+        user_profile.dietary_belief = edit_user_data.get("dietary_belief")
+        user_profile.exercise_frequency = edit_user_data.get("exercise_frequency")
+        db.commit()
+
+        return redirect("/profile")
+    else:
+        
+        print(user_profile.users_email, user_profile.height, user_profile.weight, user_profile.sex, user_profile.dietary_belief, user_profile.exercise_frequency)
+        return render_template("edit-user-profile.html", user_profile=user_profile, sex=sex)
+
+@app.route("/deregister", methods=["GET", "POST"])
 def deregister():
-    #회원탈퇴 로직
-    return render_template("deregister.html")
+    if request.method == "POST":
+        db = get_db()
+        email = session.get("email")
+        user = db.query(User).filter_by(email=email).first()
 
-@app.route("/change-password", methods=["GET"])
-def change_password():
-    #비밀번호 변경 로직
-    return render_template("change-password.html")
+        print(user)
+
+        if user:
+            db.query(ChatbotInteraction).filter_by(users_email=email).delete()
+            db.query(MealPlanItem).filter_by(users_email=email).delete()
+            db.query(MealPreference).filter_by(users_email=email).delete()
+            db.query(UserProfile).filter_by(users_email=email).delete()
+            db.query(WeightRecord).filter_by(users_email=email).delete()
+            db.delete(user)
+            db.commit()
+
+        return redirect("/logout")
+    else:
+        return render_template("deregister.html")
 
 @app.route("/input", methods=["GET", "POST"])
 @login_required
@@ -75,19 +114,20 @@ def input():
         meal_plan_items = request.form.to_dict()
         print(meal_plan_items)
         
-
-        # 음식의 양에 대한 레코드가 추가되어야함
         new_meal_plan_items = MealPlanItem(date=meal_plan_items.get('date'), meal_time=meal_plan_items.get('time'),food_item=meal_plan_items.get('food'))
         db.add(new_meal_plan_items)
         db.commit()
-        
-        # 밀 플랜을 받아서 meal plan item 테이블에 쓰기
+
         return redirect("/main")
+    
     else:
         if session.get("date") is None:
-            date = dt_date.today().strftime("%Y-%m-%d")
+            date = dt_date.today()
         else:
             date = session.get("date")
+        
+        print(time)
+        print(date)
         return render_template("input.html", time=time, date=date)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -147,6 +187,8 @@ def register():
         return redirect("/")
 
     else:
+
+        print(sex)
         return render_template("register.html" , sex=sex)
 
 @app.route("/view-weight-record", methods=["GET"])
@@ -155,9 +197,13 @@ def view_weight_record():
     email = session.get("email")
     db = get_db()
     weight_datas = db.query(WeightRecord).filter_by(users_email=email).order_by(asc(WeightRecord.date)).all()
+    user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+    
     for weight_data in weight_datas:
         print(weight_data.users_email, weight_data.date, weight_data.weight)
-    return render_template("view-weight-record.html", weight_datas=weight_datas)
+    
+
+    return render_template("view-weight-record.html", weight_datas=weight_datas, user_profile=user_profile)
 
 @app.route("/write-weight-record", methods=["GET","POST"])
 @login_required
@@ -168,27 +214,42 @@ def write_weight_record():
         print(weight_data)
         email = session.get("email")
         weight = weight_data.get('weight')
-        date = weight_data.get('date')
-        
-        new_weight = WeightRecord(users_email=email, weight=weight, date=date)
-        db.add(new_weight)
+        date = datetime.strptime(weight_data.get('date'), "%Y-%m-%d")
+
+        user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+        weight_record = db.query(WeightRecord).filter_by(users_email=email, date=date).first()
+        last_weight_record = db.query(WeightRecord).filter_by(users_email=email).order_by(desc(WeightRecord.date)).first()
+
+        if not last_weight_record or last_weight_record.date <= date and date == dt_date.today():
+            user_profile.weight = weight
+
+        if weight_record:
+            weight_record.weight = weight
+        else:
+            new_weight = WeightRecord(users_email=email, weight=weight, date=date)
+            db.add(new_weight)
+
         db.commit()
         
         return redirect("/view-weight-record")
 
     else:
-        date = dt_date.today().strftime("%Y-%m-%d")
+        date = dt_date.today()
+        print(date)
         return render_template("write-weight-record.html", date=date)
     
 @app.route("/view-meal-preference", methods=["GET"])
 @login_required
 def view_meal_preference():
-    email = session.get("email")
     db = get_db()
+    email = session.get("email")
     preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
+    user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+
     for preference_data in preference_datas:
         print(preference_data.food_item, preference_data.frequency_min, preference_data.frequency_max)
-    return render_template("view-meal-preference.html", preference_datas=preference_datas)
+    
+    return render_template("view-meal-preference.html", preference_datas=preference_datas, user_profile=user_profile)
 
 @app.route("/write-meal-preference", methods=["GET","POST"])
 @login_required
@@ -209,7 +270,9 @@ def write_meal_preference():
         return redirect("/view-meal-preference")
 
     else:
-        date = dt_date.today().strftime("%Y-%m-%d")
+        date = dt_date.today()
+
+        print(date)
         return render_template("write-meal-preference.html", date=date)
 
 @app.route("/make-meal-plan", methods=["GET", "POST"])
@@ -218,32 +281,30 @@ def make_meal_plan():
     db = get_db()
     if request.method == "POST":
         email = session.get("email")
-        meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
-        if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
-            new_meal_plan = MealPlan(users_email=email, start_date=dt_date.today().strftime("%Y-%m-%d"))
-            db.add(new_meal_plan)
-            db.commit()
+        today = dt_date.today()
 
-            meal_plan_id = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first().id
-
-            for day in range(0, 7):
-                date = dt_date.today() + timedelta(days=day)
-                date = date.strftime("%Y-%m-%d")
-                new_meal_plan_item = MealPlanItem(meal_plan_id=meal_plan_id, date=date, meal_time='lunch', food_item='potato 150gram')
-                db.add(new_meal_plan_item)
-                db.commit()
-        return redirect("/")
+        meal_plan_items = create_meal_plan_items(dt_date.today())
+        for meal_plan_item in meal_plan_items:
+            new_meal_plan_item = MealPlanItem(users_email=email,starting_date=today, date=meal_plan_item.get('date'), meal_time=meal_plan_item.get('meal_time'), food_item=meal_plan_item.get('food_item'))
+            db.add(new_meal_plan_item)
+            
+        db.commit()
+        return redirect("/main")
+    
     else:
         email = session.get("email")
         user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+        preference_foods = db.query(MealPreference.food_item).filter_by(users_email=email).all()
+        preference_foods = [food[0] for food in preference_foods]
         print(user_profile.users_email, user_profile.height, user_profile.weight, user_profile.sex, user_profile.dietary_belief, user_profile.exercise_frequency)
-        return render_template("make-meal-plan.html", user_profile=user_profile)
+        print(preference_foods)
+        return render_template("make-meal-plan.html", user_profile=user_profile, preference_foods=preference_foods)
     
 @app.route("/main", methods=["GET","POST"])
 @login_required
 def main():
     if request.method == "POST":
-        session['date'] = datetime.strptime(request.form.get("date"), "%Y-%m-%d").date()
+        session['date'] = datetime.strptime(request.form.get("date"), "%Y-%m-%d")
         return redirect("/main")
     else:
         db = get_db()
@@ -254,29 +315,20 @@ def main():
         else:
             date = session.get("date")
 
-        meal_plan = db.query(MealPlan).filter(MealPlan.users_email == email, MealPlan.start_date <= date).order_by(desc(MealPlan.created_at)).first()
-
-        print(meal_plan)
-        print(type(date))
-        print(type(meal_plan.start_date))
-
-        if not meal_plan or date - meal_plan.start_date > timedelta(days=7):
-            return redirect("/make-meal-plan")
-
-        meal_plan_items = db.query(MealPlanItem).filter_by(meal_plan_id=meal_plan.id, date=date).all()
+        meal_plan_items = db.query(MealPlanItem).filter_by(users_email=email, date=date).all()
 
         for meal_plan_item in meal_plan_items:
             print(meal_plan_item.date, meal_plan_item.meal_time, meal_plan_item.food_item)
 
         user_meal_data = {}
-
-        if user_meal_data.get(meal_plan_item.meal_time) is None:
-            user_meal_data[meal_plan_item.meal_time] = [meal_plan_item.food_item]
-        else:
-            user_meal_data[meal_plan_item.meal_time].append(meal_plan_item.food_item)
+        for meal_plan_item in meal_plan_items:
+            if user_meal_data.get(meal_plan_item.meal_time) is None:
+                user_meal_data[meal_plan_item.meal_time] = [meal_plan_item.food_item]
+            else:
+                user_meal_data[meal_plan_item.meal_time].append(meal_plan_item.food_item)
         
         print(user_meal_data)
-        
+        print(date)
         return render_template("main.html", user_meal_data=user_meal_data, date=date)
 
 @app.route('/health')

@@ -1,8 +1,8 @@
 {% extends "layout.html" %} {% block body %}
 <main class="container" style="width: 80%">
   <div class="p-5">
-    <p class="fw-bold fs-1">나의 선호</p>
-    <p class="fs-5">너의 선호를 등록하세요</p>
+    <p class="fw-bold fs-1">선호하는 음식</p>
+    <p class="fs-5">당신이 선호하는 음식을 등록해보세요!</p>
   </div>
 </main>
 <main class="container" style="width: 80%">
@@ -10,10 +10,9 @@
     <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
       <div class="row">
         <div class="col">
-          <p class="fw-bold fs-4">너의 선호</p>
-        </div>
-        <div class="col text-end">
-          <a href="/write-meal-preference" class="btn btn-dark text-white">+</a>
+          <p class="fw-bold fs-4 text-center">
+            {{ user_profile.users_email }} 님이 선호하는 음식
+          </p>
         </div>
       </div>
       <div class="mb-3 p-4 bg-body-secondary">
@@ -21,12 +20,20 @@
         for preference_data in preference_datas %}
         <p class="fs-4">
           {{ preference_data['food_item'] }}를 일주일에 {{
-          preference_data['frequency_min'] }}~{{
+          preference_data['frequency_min'] }} ~ {{
           preference_data['frequency_max'] }}번 먹고싶습니다.
         </p>
         {% endfor %} {% else %}
-        <p class="fw-bold fs-3">선호를 등록하세요</p>
+        <p class="text-center fw-bold fs-3">선호하는 음식을 등록하세요</p>
         {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col text-center">
+          <a href="/write-meal-preference" class="btn btn-dark text-white"
+            >선호하는 음식을 등록하기</a
+          >
+        </div>
       </div>
     </div>
   </div>

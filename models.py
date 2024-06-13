@@ -13,7 +13,7 @@ class ChatbotInteraction(db.Model):
     interaction_type = db.Column(db.Enum('question', 'response'), nullable=False)
     message = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
-    users_email = db.Column(db.ForeignKey('users.email'), nullable=False, index=True)
+    users_email = db.Column(db.ForeignKey('users.email', ondelete='CASCADE'), nullable=False, index=True)
 
     user = db.relationship('User', primaryjoin='ChatbotInteraction.users_email == User.email', backref='chatbot_interactions')
 
@@ -27,8 +27,7 @@ class MealPlanItem(db.Model):
     meal_time = db.Column(db.Enum('breakfast', 'lunch', 'dinner', 'snack'), nullable=False)
     food_item = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
-    meal_plan_id = db.Column(db.Integer, nullable=False)
-    users_email = db.Column(db.ForeignKey('users.email'), nullable=False, index=True)
+    users_email = db.Column(db.ForeignKey('users.email', ondelete='CASCADE'), nullable=False, index=True)
     starting_date = db.Column(db.Date, nullable=False)
 
     user = db.relationship('User', primaryjoin='MealPlanItem.users_email == User.email', backref='meal_plan_items')
@@ -40,7 +39,7 @@ class MealPlanTracking(MealPlanItem):
     status = db.Column(db.Enum('yet', 'completed', 'missed'), nullable=False)
     actual_food_item = db.Column(db.String(255))
     actual_food_date = db.Column(db.Date)
-    meal_plan_items_id = db.Column(db.ForeignKey('meal_plan_items.id'), primary_key=True)
+    meal_plan_items_id = db.Column(db.ForeignKey('meal_plan_items.id', ondelete='CASCADE'), primary_key=True)
 
 
 
@@ -51,7 +50,7 @@ class MealPreference(db.Model):
     food_item = db.Column(db.String(255), nullable=False)
     frequency_min = db.Column(db.Integer, nullable=False)
     frequency_max = db.Column(db.Integer, nullable=False)
-    users_email = db.Column(db.ForeignKey('users.email'), nullable=False, index=True)
+    users_email = db.Column(db.ForeignKey('users.email', ondelete='CASCADE'), nullable=False, index=True)
 
     user = db.relationship('User', primaryjoin='MealPreference.users_email == User.email', backref='meal_preferences')
 
@@ -66,7 +65,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
-class UserProfile(User):
+class UserProfile(db.Model):
     __tablename__ = 'user_profile'
 
     height = db.Column(db.Numeric(5, 2), nullable=False)
@@ -74,7 +73,7 @@ class UserProfile(User):
     sex = db.Column(db.Enum('male', 'female'), nullable=False)
     dietary_belief = db.Column(db.String(255))
     exercise_frequency = db.Column(db.Integer, nullable=False)
-    users_email = db.Column(db.ForeignKey('users.email'), primary_key=True)
+    users_email = db.Column(db.ForeignKey('users.email', ondelete='CASCADE'), primary_key=True)
 
 
 
@@ -84,7 +83,7 @@ class WeightRecord(db.Model):
     weight = db.Column(db.Numeric(5, 2), nullable=False)
     date = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     id = db.Column(db.Integer, primary_key=True)
-    users_email = db.Column(db.ForeignKey('users.email'), nullable=False, index=True)
+    users_email = db.Column(db.ForeignKey('users.email', ondelete='CASCADE'), nullable=False, index=True)
 
     user = db.relationship('User', primaryjoin='WeightRecord.users_email == User.email', backref='weight_records')
 

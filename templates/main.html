@@ -5,13 +5,8 @@
     <p class="fs-5">오늘의 식사입니다.</p>
     <form action="/main" method="post">
       <div class="input-group">
-        <input
-          name="date"
-          required
-          value="{{ date }}"
-          type="date"
-          class="form-control bg-light-subtle"
-        />
+        <input name="date" required value="{{ date.strftime("%Y-%m-%d") }}"
+        type="date" class="form-control bg-light-subtle" />
         <button class="btn btn-dark text-white" type="submit">확인</button>
       </div>
     </form>
@@ -20,34 +15,29 @@
 <main class="container" style="width: 80%">
   <div class="p-5 pt-0">
     <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
-      <p class="fs-5">{{ date }}</p>
+      <p class="fs-5">{{ date.strftime("%Y-%m-%d") }}</p>
       <div class="mb-3" style="border: 1px solid black"></div>
       <div class="row">
         <div class="col">
-          <p class="fw-bold fs-4">AI 추천 식단</p>
-        </div>
-        <div class="col text-end">
-          <a href="/input" class="btn btn-dark text-white">+</a>
+          <p class="text-center fw-bold fs-4">AI 추천 식단</p>
         </div>
       </div>
       <div class="mb-3 p-4 bg-body-secondary">
-        {% if user_meal_data.get('breakfast') is not none %}
-        <p class="fw-bold fs-3">breakfast</p>
-        {% endif %} {% for meal in user_meal_data['breakfast'] %}
+        {% if user_meal_data %} {% for meal_type in ['breakfast', 'lunch',
+        'dinner', 'snack'] %} {% if user_meal_data.get(meal_type) %}
+        <p class="fw-bold fs-3">{{ meal_type }}</p>
+        {% for meal in user_meal_data[meal_type] %}
         <p class="fs-4">{{ meal }}</p>
-        {% endfor%} {% if user_meal_data.get('lunch') is not none %}
-        <p class="fw-bold fs-3">lunch</p>
-        {% endif %} {% for meal in user_meal_data['lunch'] %}
-        <p class="fs-4">{{ meal }}</p>
-        {% endfor%} {% if user_meal_data.get('dinner') is not none %}
-        <p class="fw-bold fs-3">dinner</p>
-        {% endif %} {% for meal in user_meal_data['dinner'] %}
-        <p class="fs-4">{{ meal }}</p>
-        {% endfor%} {% if user_meal_data.get('snack') is not none %}
-        <p class="fw-bold fs-3">snack</p>
-        {% endif %} {% for meal in user_meal_data['snack'] %}
-        <p class="fs-4">{{ meal }}</p>
-        {% endfor%}
+        {% endfor %} {% endif %} {% endfor %} {% else %}
+        <div class="col text-center">
+          <p class="text-body-dark text-center">
+            식단이 없습니다. 식단을 생성해주세요.
+          </p>
+          <a href="/make-meal-plan" class="btn btn-dark text-white">
+            생성하러 가기
+          </a>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>

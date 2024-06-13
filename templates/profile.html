@@ -1,0 +1,137 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5 mt-5">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4 text-center">
+            {{ user_profile.users_email }} 님의 프로필
+          </p>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        <div class="row">
+          <div class="col">
+            <p class="fs-4">키: {{ user_profile.height }}</p>
+          </div>
+          <div class="col">
+            <p class="fs-4">무게: {{ user_profile.weight }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="fs-4">성별: {{ user_profile.sex }}</p>
+          </div>
+          <div class="col">
+            <p class="fs-4">신념: {{ user_profile.dietary_belief }}</p>
+          </div>
+        </div>
+        <p class="fs-4">
+          주당 운동 횟수: {{ user_profile.exercise_frequency }}
+        </p>
+      </div>
+      <div class="row">
+        <div class="col text-center">
+          <a href="/edit-user-profile" class="btn btn-dark text-white"
+            >프로필 수정하기</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4 text-center">
+            {{ user_profile.users_email }} 님이 선호하는 음식
+          </p>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        {% if preference_datas is not none and preference_datas|length > 0 %} {%
+        for preference_data in preference_datas %}
+        <p class="fs-4">
+          {{ preference_data['food_item'] }}를 일주일에 {{
+          preference_data['frequency_min'] }} ~ {{
+          preference_data['frequency_max'] }}번 먹고싶습니다.
+        </p>
+        {% endfor %} {% else %}
+        <p class="text-center fw-bold fs-3">선호하는 음식을 등록하세요</p>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col text-center">
+          <a href="/write-meal-preference" class="btn btn-dark text-white"
+            >선호하는 음식을 등록하기</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4 text-center">
+            {{ user_profile.users_email }} 님의 몸무게 변화
+          </p>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        {% if weight_datas is not none and weight_datas|length > 0 %} {% for
+        weight_data in weight_datas %} {% if loop.index == 1 or loop.index is
+        odd %}
+        <div class="row">
+          {% endif %}
+          <div class="col">
+            <p class="fs-4">{{ weight_data['date'].strftime('%Y-%m-%d') }}</p>
+            <p class="fw-bold fs-3">{{ weight_data['weight'] }} kg</p>
+          </div>
+          {% if loop.index == weight_datas|length or loop.index is even %}
+        </div>
+        {% endif %} {% endfor %} {% else %}
+        <p class="text-center fw-bold fs-3">몸무게를 등록하지 않았습니다.</p>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col text-center">
+          <a href="/write-weight-record" class="btn btn-dark text-white"
+            >몸무게 등록하기</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4 text-center">
+            {{ user_profile.users_email }} 님의 가입정보
+          </p>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        <p class="fs-4">가입일: {{ user_info.strftime("%Y-%m-%d") }}</p>
+      </div>
+      <div class="row">
+        <div class="col text-center">
+          <a href="/deregister" class="btn btn-dark text-white">회원 탈퇴</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

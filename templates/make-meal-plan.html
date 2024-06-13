@@ -9,20 +9,45 @@
     <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
       <div class="row">
         <div class="col">
-          <p class="fw-bold fs-4">{{ user_profile.users_email }}님의 스탯</p>
+          <p class="fw-bold fs-4">{{ user_profile.users_email }} 님의 프로필</p>
         </div>
         <div class="col text-end">
-          <a href="/edit-user-profile" class="btn btn-dark text-white">Edit</a>
+          <a href="/profile" class="btn btn-dark text-white">프로필 수정</a>
         </div>
       </div>
       <div class="mb-3 p-4 bg-body-secondary">
-        <p class="fs-4">키: {{ user_profile.height }}</p>
-        <p class="fs-4">무게: {{ user_profile.weight }}</p>
-        <p class="fs-4">성별: {{ user_profile.sex }}</p>
-        <p class="fs-4">신념: {{ user_profile.dietary_belief }}</p>
-        <p class="fs-4">
-          주당 운동 횟수: {{ user_profile.exercise_frequency }}
-        </p>
+        <div class="row">
+          <div class="col">
+            <p class="fs-4">키: {{ user_profile.height }}</p>
+          </div>
+          <div class="col">
+            <p class="fs-4">무게: {{ user_profile.weight }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="fs-4">성별: {{ user_profile.sex }}</p>
+          </div>
+          <div class="col">
+            <p class="fs-4">신념: {{ user_profile.dietary_belief }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="fs-4">
+              주당 운동 횟수: {{ user_profile.exercise_frequency }}
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="fs-4">
+              {{ user_profile.users_email }} 님이 선호하는 음식: {% for
+              preference_food in preference_foods %}[ {{ preference_food }} ] {%
+              endfor %}
+            </p>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="col text-center">
