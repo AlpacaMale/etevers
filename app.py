@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, session, redirect, jsonify
 from function import login_required, get_db, teardown_request, error
 from datetime import date as dt_date, timedelta, datetime
 from config import Config
-from models import db, time, sex, MealPlan, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
+from models import db, time, sex, MealPlanItem, MealPlanTracking, MealPreference, User, UserProfile, WeightRecord
 from sqlalchemy import asc, desc
 
 # from flask_session import Session
@@ -243,23 +243,28 @@ def make_meal_plan():
 @login_required
 def main():
     if request.method == "POST":
-        session['date'] = request.form.get("date")
+        session['date'] = datetime.strptime(request.form.get("date"), "%Y-%m-%d").date()
         return redirect("/main")
     else:
         db = get_db()
         email = session.get("email")
 
         if session.get("date") is None:
-            date = dt_date.today().strftime("%Y-%m-%d")
+            date = dt_date.today()
         else:
             date = session.get("date")
 
-        meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
-        if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
+        meal_plan = db.query(MealPlan).filter(MealPlan.users_email == email, MealPlan.start_date <= date).order_by(desc(MealPlan.created_at)).first()
+
+        print(meal_plan)
+        print(type(date))
+        print(type(meal_plan.start_date))
+
+        if not meal_plan or date - meal_plan.start_date > timedelta(days=7):
             return redirect("/make-meal-plan")
 
         meal_plan_items = db.query(MealPlanItem).filter_by(meal_plan_id=meal_plan.id, date=date).all()
-        # 유저 밀플랜을 받아서
+
         for meal_plan_item in meal_plan_items:
             print(meal_plan_item.date, meal_plan_item.meal_time, meal_plan_item.food_item)
 

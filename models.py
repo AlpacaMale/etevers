@@ -19,18 +19,6 @@ class ChatbotInteraction(db.Model):
 
 
 
-class MealPlan(db.Model):
-    __tablename__ = 'meal_plan'
-
-    id = db.Column(db.Integer, primary_key=True)
-    start_date = db.Column(db.Date, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
-    users_email = db.Column(db.ForeignKey('users.email'), nullable=False, index=True)
-
-    user = db.relationship('User', primaryjoin='MealPlan.users_email == User.email', backref='meal_plans')
-
-
-
 class MealPlanItem(db.Model):
     __tablename__ = 'meal_plan_items'
 
@@ -39,15 +27,17 @@ class MealPlanItem(db.Model):
     meal_time = db.Column(db.Enum('breakfast', 'lunch', 'dinner', 'snack'), nullable=False)
     food_item = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
-    meal_plan_id = db.Column(db.ForeignKey('meal_plan.id'), nullable=False, index=True)
+    meal_plan_id = db.Column(db.Integer, nullable=False)
+    users_email = db.Column(db.ForeignKey('users.email'), nullable=False, index=True)
+    starting_date = db.Column(db.Date, nullable=False)
 
-    meal_plan = db.relationship('MealPlan', primaryjoin='MealPlanItem.meal_plan_id == MealPlan.id', backref='meal_plan_items')
+    user = db.relationship('User', primaryjoin='MealPlanItem.users_email == User.email', backref='meal_plan_items')
 
 
 class MealPlanTracking(MealPlanItem):
     __tablename__ = 'meal_plan_tracking'
 
-    status = db.Column(db.Enum('completed', 'missed'), nullable=False)
+    status = db.Column(db.Enum('yet', 'completed', 'missed'), nullable=False)
     actual_food_item = db.Column(db.String(255))
     actual_food_date = db.Column(db.Date)
     meal_plan_items_id = db.Column(db.ForeignKey('meal_plan_items.id'), primary_key=True)
@@ -70,14 +60,13 @@ class MealPreference(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
 
-    ID = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), nullable=False, unique=True)
+    email = db.Column(db.String(255), primary_key=True, unique=True)
     password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
     updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
-class UserProfile(db.Model):
+class UserProfile(User):
     __tablename__ = 'user_profile'
 
     height = db.Column(db.Numeric(5, 2), nullable=False)
