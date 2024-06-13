@@ -1,31 +1,19 @@
-FROM python:3.9-alpine
-WORKDIR /app
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+# Python 3.9 버전을 베이스 이미지로 사용
+FROM python:3.9
+
+# 작업 디렉토리를 /usr/src/app으로 설정
+WORKDIR /usr/src/app
+
+# 필요한 패키지들을 설치
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 애플리케이션 소스 코드를 복사
 COPY . .
-CMD ["python3", "main.py"]
 
+# 애플리케이션이 사용할 포트를 지정
+EXPOSE 8080
 
+# 애플리케이션 실행
+CMD [ "python", "./run.py" ]
 
-
-
-# flask 젠킨스 Dokerfile pipeline 
-# Use the official image as a parent image.
-FROM node:current-slim
-
-# Set the working directory
-WORKDIR /home
-
-# Copy the file from your host to your current location.
-COPY app/ /home/
-
-# Run the command inside your image filesystem
-RUN npm install
-
-# Inform Docker that the container is listening on the specified port at runtime
-EXPOSE 3000
-
-# Run the specified command within the container.
-CMD ["npm", "start"]
-
-# Copy the rest of your app's source code from your host to your image filesystem.
