@@ -35,9 +35,9 @@
         <p class="fw-bold fs-3">breakfast</p>
         {% endif %} {% for meal in user_meal_data['breakfast'] %}
         <p class="fs-4">{{ meal }}</p>
-        {% endfor%} {% if user_meal_data.get('launch') is not none %}
-        <p class="fw-bold fs-3">launch</p>
-        {% endif %} {% for meal in user_meal_data['launch'] %}
+        {% endfor%} {% if user_meal_data.get('lunch') is not none %}
+        <p class="fw-bold fs-3">lunch</p>
+        {% endif %} {% for meal in user_meal_data['lunch'] %}
         <p class="fs-4">{{ meal }}</p>
         {% endfor%} {% if user_meal_data.get('dinner') is not none %}
         <p class="fw-bold fs-3">dinner</p>
@@ -48,10 +48,6 @@
         {% endif %} {% for meal in user_meal_data['snack'] %}
         <p class="fs-4">{{ meal }}</p>
         {% endfor%}
-      </div>
-      <p class="fw-bold fs-4">ㄹㅇㄴㅁㄹㅇㄴ</p>
-      <div class="mb-3 p-4 bg-body-secondary">
-        <p class="fs-3">식단을 등록 안했잖아</p>
       </div>
     </div>
   </div>

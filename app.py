@@ -248,31 +248,31 @@ def main():
     else:
         db = get_db()
         email = session.get("email")
-        meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
-        if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
-            return redirect("/make-meal-plan")
-        
+
         if session.get("date") is None:
             date = dt_date.today().strftime("%Y-%m-%d")
         else:
             date = session.get("date")
 
-        meal_plan_items = db.query(MealPlanItem).filter_by(meal_plan_id=meal_plan.id).all()
+        meal_plan = db.query(MealPlan).filter_by(users_email=email).order_by(desc(MealPlan.created_at)).first()
+        if not meal_plan or dt_date.today() - meal_plan.start_date > timedelta(days=7):
+            return redirect("/make-meal-plan")
+
+        meal_plan_items = db.query(MealPlanItem).filter_by(meal_plan_id=meal_plan.id, date=date).all()
         # 유저 밀플랜을 받아서
         for meal_plan_item in meal_plan_items:
             print(meal_plan_item.date, meal_plan_item.meal_time, meal_plan_item.food_item)
 
-        # 타임별로(아침점심저녁)분류해서 프론트에 쏴줄데이터를 완성하는 로직
+        user_meal_data = {}
+
+        if user_meal_data.get(meal_plan_item.meal_time) is None:
+            user_meal_data[meal_plan_item.meal_time] = [meal_plan_item.food_item]
+        else:
+            user_meal_data[meal_plan_item.meal_time].append(meal_plan_item.food_item)
         
-        user_meal_datas = []
-        for meal_plan_item in meal_plan_items:
-
-            user_meal_data = {
-            'date': meal_plan_item.date,
-            'meal_time': meal_plan_item.meal_time
-            }
-
-        return render_template("main.html", user_meal_datas=user_meal_datas,date=date)
+        print(user_meal_data)
+        
+        return render_template("main.html", user_meal_data=user_meal_data, date=date)
 
 @app.route('/health')
 def health():
