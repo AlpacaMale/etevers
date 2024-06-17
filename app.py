@@ -323,9 +323,9 @@ def main():
         user_meal_data = {}
         for meal_plan_item in meal_plan_items:
             if user_meal_data.get(meal_plan_item.meal_time) is None:
-                user_meal_data[meal_plan_item.meal_time] = [meal_plan_item.food_item]
+                user_meal_data[meal_plan_item.meal_time] = [{meal_plan_item.food_item:meal_plan_item.id}]
             else:
-                user_meal_data[meal_plan_item.meal_time].append(meal_plan_item.food_item)
+                user_meal_data[meal_plan_item.meal_time].append({meal_plan_item.food_item:meal_plan_item.id})
         
         print(user_meal_data)
         print(date)
