@@ -1,0 +1,45 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5">
+    <p class="fw-bold fs-1">몸무게 변화</p>
+    <p class="fs-5">몸무게의 변화를 모니터링 해보세요!</p>
+  </div>
+</main>
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4 text-center">
+            {{ user_profile.users_email }} 님의 몸무게 변화
+          </p>
+        </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary">
+        {% if weight_datas is not none and weight_datas|length > 0 %} {% for
+        weight_data in weight_datas %} {% if loop.index == 1 or loop.index is
+        odd %}
+        <div class="row">
+          {% endif %}
+          <div class="col">
+            <p class="fs-4">{{ weight_data['date'].strftime('%Y-%m-%d') }}</p>
+            <p class="fw-bold fs-3">{{ weight_data['weight'] }} kg</p>
+          </div>
+          {% if loop.index == weight_datas|length or loop.index is even %}
+        </div>
+        {% endif %} {% endfor %} {% else %}
+        <p class="text-center fw-bold fs-3">몸무게를 등록하지 않았습니다.</p>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col text-center">
+          <a href="/write-weight-record" class="btn btn-dark text-white"
+            >몸무게 등록하기</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

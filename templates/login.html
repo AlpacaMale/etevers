@@ -1,0 +1,45 @@
+{% extends "layout.html" %} {% block body %}
+
+<main
+  class="container content d-flex flex-column align-items-center justify-content-center"
+>
+  <div class="border border-3 border-dark rounded p-5">
+    <p class="text-center fw-bold fs-4">Maintain</p>
+    <p class="text-center fw-bold fs-1">Login</p>
+    <form action="/login" method="post">
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input
+          class="form-control"
+          type="email"
+          name="email"
+          required
+          id="email"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <input
+          class="form-control"
+          type="password"
+          name="password"
+          required
+          id="password"
+        />
+      </div>
+      <div class="d-grid">
+        <button class="btn btn-dark text-white" type="submit">Login</button>
+      </div>
+    </form>
+    <p class="text-body-dark text-center mt-4">
+      <a href="/email-find" class="text-reset text-decoration-none fw-bold"
+        >아이디/비밀번호를 잊어버리셨나요?</a
+      >
+      <br />
+      <a href="/register" class="text-reset text-decoration-none fw-bold fs-5"
+        >회원가입하기</a
+      >
+    </p>
+  </div>
+</main>
+{% endblock %}

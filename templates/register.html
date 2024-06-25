@@ -1,0 +1,128 @@
+{% extends "layout.html" %} {% block body %}
+<main
+  class="container d-flex align-items-center justify-content-center mt-5"
+>
+  <div class="border border-3 border-dark rounded p-5">
+    <p class="text-center fw-bold fs-4">Maintain</p>
+    <p class="text-center fw-bold fs-1">Register</p>
+    <form action="/register" method="post">
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input
+          class="form-control"
+          type="email"
+          name="email"
+          required
+          id="email"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <input
+          class="form-control"
+          type="password"
+          name="password"
+          required
+          id="password"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password-confirm"
+          >Password Confirm</label
+        >
+        <input
+          class="form-control"
+          type="password"
+          name="password-confirm"
+          required
+          id="password-confirm"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="height"
+          >height</label
+        >
+        <input
+          class="form-control"
+          type="number"
+          name="height"
+          required
+          id="height"
+          step="0.01"
+          min="0"
+          max="999.99"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="weight"
+          >weight</label
+        >
+        <input
+          class="form-control"
+          type="number"
+          name="weight"
+          required
+          id="weight"
+          step="0.01"
+          min="0"
+          max="999.99"
+        />
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label" for="sex"
+        >sex</label
+        >
+        <select class="form-select" name="sex" id="sex">
+          {% for value in sex %}
+          <option value="{{value}}">{{value}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label" for="dietary_belief"
+          >dietary_belief</label
+        >
+        <input
+          class="form-control"
+          type="text"
+          name="dietary_belief"
+          required
+          id="dietary_belief"
+        />
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label" for="exercise_frequency"
+          >일주일에 몇번운동합니까</label
+        >
+        <input
+          class="form-control"
+          type="number"
+          name="exercise_frequency"
+          required
+          id="exercise_frequency"
+          min="0"
+          max="7"
+        />
+      </div>
+
+      <div class="input-group mb-3">
+        <div class="input-group-text">
+          <input class="form-check-input" type="checkbox" required id="agree" />
+        </div>
+        <label class="input-group-text" for="agree"
+          >개인정보 처리방침에 동의합니다.</label
+        >
+      </div>
+
+      <div class="d-grid">
+        <button class="btn btn-dark text-white" type="submit">Register</button>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}
