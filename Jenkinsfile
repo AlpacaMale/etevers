@@ -52,6 +52,7 @@ pipeline {
                     script {
                         // 매니페스트 레포지토리 업데이트
                         sh '''
+                        rm -rf Jenkins_backend_manifast
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         cd Jenkins_backend_manifast
                         sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
