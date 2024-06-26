@@ -6,7 +6,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}" // 빌드 번호를 태그로 사용
-        MANIFEST_REPO = 'https://github.com/Mozo119/Jenkins_backend_manifast.git'
+        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifast.git'
         MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
     }
     
@@ -48,24 +48,25 @@ pipeline {
         }
         stage('Update Manifest Repository') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    script {
-                        // 매니페스트 레포지토리 업데이트
-                        sh '''
-                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
-                        cd Jenkins_backend_manifast
-                        sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
-                        echo "Updated deployment.yaml:"
-                        cat deployment.yaml
-                        git config --global user.email "rlaalstjr0502@gmail.com"
-                        git config --global user.name "Mozo119"
-                        git add deployment.yaml
-                        git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
-                        '''
-                    }
+                script {
+                    // 매니페스트 레포지토리 업데이트
+                    sh '''
+                    git clone https://${GIT_CREDENTIALS_ID}@${MANIFEST_REPO}
+                    cd Jenkins_backend_manifast
+                    sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
+                    git config --global user.email "rlaalstjr0502@gmail.com"
+                    git config --global user.name "Mozo119"
+                    git add deployment.yaml
+                    git commit -m "Update image to ${IMAGE_TAG}"
+                    git push https://${MANIFEST_REPO_CREDENTIALS_ID}@${MANIFEST_REPO}
+                    '''
                 }
             }
         }
     }
 }
+
+
+
+
+
