@@ -20,6 +20,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Build Docker Image') {
             steps {
                 script {
@@ -37,6 +38,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Push to ECR') {
             steps {
                 script {
@@ -46,13 +48,15 @@ pipeline {
                 }
             }
         }
+        
         stage('Update Manifest Repository') {
             steps {
                 script {
                     // 매니페스트 레포지토리 업데이트
                     sh '''
-                    git clone https://${MANIFEST_REPO_CREDENTIALS_ID}@${MANIFEST_REPO}
-                    cd Jenkins_backend_manifest                 
+                    rm -rf Jenkins_backend_manifest
+                    git clone https://${MANIFEST_REPO_CREDENTIALS_ID}@${MANIFEST_REPO} Jenkins_backend_manifest
+                    cd Jenkins_backend_manifest
                     sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
                     git config --global user.email "rlaalstjr0502@gmail.com"
                     git config --global user.name "Mozo119"
