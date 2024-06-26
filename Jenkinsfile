@@ -46,29 +46,20 @@ pipeline {
                 }
             }
         }
-        stage('Update Manifests and Deploy') {
+        stage('Update Manifest Repository') {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     script {
                         // 매니페스트 레포지토리 업데이트
                         sh '''
-                        rm -rf Jenkins_backend_manifast
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         cd Jenkins_backend_manifast
                         sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
-                        echo "Updated deployment.yaml:"
-                        cat deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
-                        git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
+                        git commit -m "Update image to ${IMAGE_TAG}"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
-                        '''
-                        
-                        // Kubernetes에 배포
-                        sh '''
-                        kubectl apply -f deployment.yaml -n app
-                        kubectl apply -f service.yaml -n app
                         '''
                     }
                 }
