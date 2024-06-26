@@ -6,7 +6,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}" // 빌드 번호를 태그로 사용
-        MANIFEST_REPO = 'https://github.com/Mozo119/Jenkins_backend_manifast.git'
+        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifast.git'
         MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
     }
     
@@ -23,17 +23,13 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // AWS ECR 로그인
+                    // AWS ECR 로그인 및 Docker 이미지 빌드 및 태그
                     sh '''
                     aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_REPO}
+                    docker build -t backend:${IMAGE_TAG} .
+                    docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}
+                    docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:latest
                     '''
-                    
-                    // Docker 이미지 빌드
-                    sh 'docker build -t backend:${IMAGE_TAG} .'
-                    
-                    // Docker 이미지 태그
-                    sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}'
-                    sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:latest'
                 }
             }
         }
@@ -41,8 +37,10 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 푸시
-                    sh 'docker push ${AWS_ECR_REPO}:${IMAGE_TAG}'
-                    sh 'docker push ${AWS_ECR_REPO}:latest'
+                    sh '''
+                    docker push ${AWS_ECR_REPO}:${IMAGE_TAG}
+                    docker push ${AWS_ECR_REPO}:latest
+                    '''
                 }
             }
         }
@@ -56,8 +54,6 @@ pipeline {
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         cd Jenkins_backend_manifast
                         sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
-                        echo "Updated deployment.yaml:"
-                        cat deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
