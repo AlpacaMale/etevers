@@ -29,10 +29,11 @@ pipeline {
                     '''
                     
                     // Docker 이미지 빌드
-                    sh 'docker build -t ${AWS_ECR_REPO}:${IMAGE_TAG} .'
+                    sh 'docker build -t backend:${IMAGE_TAG} .'
                     
                     // Docker 이미지 태그
-                    sh 'docker tag ${AWS_ECR_REPO}:${IMAGE_TAG} ${AWS_ECR_REPO}:latest'
+                    sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}'
+                    sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:latest'
                 }
             }
         }
@@ -50,10 +51,9 @@ pipeline {
                 script {
                     // 매니페스트 레포지토리 업데이트
                     sh '''
-                    rm -rf Jenkins_backend_manifest
-                    git clone https://${GIT_CREDENTIALS_ID}@${MANIFEST_REPO}
-                    cd Jenkins_backend_manifast
-                    sed -i "s|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|" deployment.yaml
+                    git clone https://${MANIFEST_REPO_CREDENTIALS_ID}@${MANIFEST_REPO}
+                    cd Jenkins_backend_manifest                 
+                    sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
                     git config --global user.email "rlaalstjr0502@gmail.com"
                     git config --global user.name "Mozo119"
                     git add deployment.yaml
