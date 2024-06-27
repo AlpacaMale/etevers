@@ -5,8 +5,8 @@
     <p class="fs-5">오늘의 식사입니다.</p>
     <form action="/main" method="post">
       <div class="input-group">
-        <input name="date" required value="{{ date.strftime("%Y-%m-%d") }}"
-        type="date" class="form-control bg-light-subtle" />
+        <input name="date" required value="{{ date.strftime(" %Y-%m-%d") }}" type="date"
+          class="form-control bg-light-subtle" />
         <button class="btn btn-dark text-white" type="submit">확인</button>
       </div>
     </form>
@@ -31,29 +31,14 @@
           {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id
           in meal.items() %}
           <p class="fs-4">
-            <input
-              type="radio"
-              class="btn-check"
-              name="{{ meal_id }}-{{ meal_type }}"
-              id="{{ meal_id }}-{{ meal_type }}-no"
-              autocomplete="off"
-              checked
-            />
-            <label class="btn" for="{{ meal_id }}-{{ meal_type }}-no"
-              >안먹음</label
-            >
-
-            <input
-              type="radio"
-              class="btn-check"
-              name="{{ meal_id }}-{{ meal_type }}"
-              id="{{ meal_id }}-{{ meal_type }}-yes"
-              autocomplete="off"
-            />
-            <label class="btn" for="{{ meal_id }}-{{ meal_type }}-yes"
-              >먹음</label
-            >
             {{ food_item }}
+            <input type="radio" class="btn-check" name="{{ meal_id }}-{{ meal_type }}"
+              id="{{ meal_id }}-{{ meal_type }}-no" autocomplete="off" checked />
+            <label class="btn" for="{{ meal_id }}-{{ meal_type }}-no">안먹음</label>
+
+            <input type="radio" class="btn-check" name="{{ meal_id }}-{{ meal_type }}"
+              id="{{ meal_id }}-{{ meal_type }}-yes" autocomplete="off" />
+            <label class="btn" for="{{ meal_id }}-{{ meal_type }}-yes">먹음</label>
           </p>
           {% endfor %} {% endfor %} {% endif %} {% endfor %} {% else %}
           <div class="col text-center">
