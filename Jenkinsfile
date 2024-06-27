@@ -1,3 +1,5 @@
+// 
+
 pipeline {
     agent any
     
@@ -51,19 +53,21 @@ pipeline {
         
         stage('Update Manifest Repository') {
             steps {
-                script {
-                    // 매니페스트 레포지토리 업데이트
-                    sh '''
-                    rm -rf Jenkins_backend_manifest
-                    git clone https://${MANIFEST_REPO_CREDENTIALS_ID}@${MANIFEST_REPO} Jenkins_backend_manifest
-                    cd Jenkins_backend_manifest
-                    sed -i "s|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|" deployment.yaml
-                    git config --global user.email "rlaalstjr0502@gmail.com"
-                    git config --global user.name "Mozo119"
-                    git add deployment.yaml
-                    git commit -m "Update image to ${IMAGE_TAG}"
-                    git push https://${MANIFEST_REPO_CREDENTIALS_ID}@${MANIFEST_REPO}
-                    '''
+                withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    script {
+                        // 매니페스트 레포지토리 업데이트
+                        sh '''
+                        rm -rf Jenkins_backend_manifast
+                        git clone https://$GIT_USERNAME:$GIT_PASSWORD@$MANIFEST_REPO
+                        cd Jenkins_backend_manifast
+                        sed -i 's|image: .*|image: ${AWS_ECR_REPO}:${IMAGE_TAG}|' deployment.yaml
+                        git config --global user.email "rlaalstjr0502@gmail.com"
+                        git config --global user.name "Mozo119"
+                        git add deployment.yaml
+                        git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
+                        git push https://$GIT_USERNAME:$GIT_PASSWORD@$MANIFEST_REPO
+                        '''
+                    }
                 }
             }
         }
