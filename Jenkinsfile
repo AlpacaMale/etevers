@@ -58,7 +58,8 @@ pipeline {
                         rm -rf Jenkins_backend_manifast
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         cd Jenkins_backend_manifast
-                        sed -i 's|471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend:.*|'471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend:${IMAGE_TAG}'|g' deployment.yaml
+                        sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
+                        sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
@@ -66,20 +67,6 @@ pipeline {
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         '''
                     }
-                }
-            }
-        }
-        
-        // 새롭게 추가된 단계
-        stage('Build and Push Docker Image Again') {
-            steps {
-                script {
-                    // `deployment.yaml` 파일을 다시 읽고 Docker 이미지 빌드 및 푸시
-                    sh '''
-                    docker build -t backend:${IMAGE_TAG} .
-                    docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}
-                    docker push ${AWS_ECR_REPO}:${IMAGE_TAG}
-                    '''
                 }
             }
         }
