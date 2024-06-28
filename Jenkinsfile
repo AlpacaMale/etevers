@@ -78,7 +78,7 @@ pipeline {
                     sh '''
                     docker images --filter "reference=${AWS_ECR_REPO}" --format "{{.ID}} {{.Tag}}" | while read -r id tag; do
                         if [ "$tag" != "latest" ] && [ "$tag" != "${IMAGE_TAG}" ]; then
-                            docker rmi "$id"
+                            docker rmi -f "$id"
                         fi
                     done
                     '''
