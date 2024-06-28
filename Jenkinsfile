@@ -70,5 +70,35 @@ pipeline {
                 }
             }
         }
+        
+        stage('Clean Up Old Docker Images') {
+            steps {
+                script {
+                    // Docker 이미지를 정리
+                    sh '''
+                    docker images --filter "reference=${AWS_ECR_REPO}" --format "{{.ID}} {{.Tag}}" | while read -r id tag; do
+                        if [ "$tag" != "latest" ] && [ "$tag" != "${IMAGE_TAG}" ]; then
+                            docker rmi "$id"
+                        fi
+                    done
+                    '''
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            script {
+                // 성공 시 추가 작업 (옵션)
+                echo '파이프라인이 성공적으로 완료되었습니다.'
+            }
+        }
+        failure {
+            script {
+                // 실패 시 추가 작업 (옵션)
+                echo '파이프라인이 실패했습니다.'
+            }
+        }
     }
 }
