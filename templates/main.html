@@ -5,8 +5,7 @@
     <p class="fs-5">오늘의 식사입니다.</p>
     <form action="/main" method="post">
       <div class="input-group">
-        <input name="date" required value="{{ date.strftime(" %Y-%m-%d") }}" type="date"
-          class="form-control bg-light-subtle" />
+        <input name="date" required value="{{ date }}" type="date" class="form-control bg-light-subtle" />
         <button class="btn btn-dark text-white" type="submit">확인</button>
       </div>
     </form>
@@ -14,54 +13,35 @@
 </main>
 
 <main class="container" style="width: 80%">
-  <form action="/edit-meal" method="post">
-    <div class="p-5 pt-0">
-      <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
-        <p class="fs-5">{{ date.strftime("%Y-%m-%d") }}</p>
-        <div class="mb-3" style="border: 1px solid black"></div>
-        <div class="row">
-          <div class="col">
-            <p class="text-center fw-bold fs-4">AI 추천 식단</p>
-          </div>
+  <div class="p-5 pt-0">
+    <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
+      <div class="row">
+        <div class="col">
+          <p class="text-center fw-bold fs-4">AI 추천 식단</p>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end"></div>
         </div>
-        <div class="mb-3 p-4 bg-body-secondary text-center">
-          {% if user_meal_data %} {% for meal_type in ['breakfast', 'lunch',
-          'dinner', 'snack'] %} {% if user_meal_data.get(meal_type) %}
-          <p class="fw-bold fs-3">{{ meal_type }}</p>
-          {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id
-          in meal.items() %}
-          <p class="fs-4">
-            {{ food_item }}
-            <input type="radio" class="btn-check" name="{{ meal_id }}-{{ meal_type }}"
-              id="{{ meal_id }}-{{ meal_type }}-no" autocomplete="off" checked />
-            <label class="btn" for="{{ meal_id }}-{{ meal_type }}-no">안먹음</label>
-
-            <input type="radio" class="btn-check" name="{{ meal_id }}-{{ meal_type }}"
-              id="{{ meal_id }}-{{ meal_type }}-yes" autocomplete="off" />
-            <label class="btn" for="{{ meal_id }}-{{ meal_type }}-yes">먹음</label>
-          </p>
-          {% endfor %} {% endfor %} {% endif %} {% endfor %} {% else %}
-          <div class="col text-center">
-            <p class="text-body-dark text-center">
-              식단이 없습니다. 식단을 생성해주세요.
-            </p>
-            <a href="/make-meal-plan" class="btn btn-dark text-white">
-              생성하러 가기
-            </a>
-          </div>
+      </div>
+      <div class="row">
+        <p class="fs-5 col">{{ date.strftime("%Y-%m-%d") }}</p>
+        <div class="col text-end">
+          {% if user_meal_data %}
+          <a href="/edit-meal" class="btn btn-dark text-white">go to edit</a>
           {% endif %}
         </div>
-        {% if user_meal_data %}
-        <div class="row">
-          <div class="text-center">
-            <button class="btn btn-dark text-white" type="submit">
-              먹음/안먹음 확인
-            </button>
-          </div>
+      </div>
+      <div class="mb-3 p-4 bg-body-secondary text-center">
+        {% if user_meal_data %} {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] %} {% if user_meal_data.get(meal_type) %}
+        <p class="fw-bold fs-3">{{ meal_type }}</p>
+        {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
+        <p class="fs-4">{{ food_item }}</p>
+        {% endfor %} {% endfor %} {% endif %} {% endfor %} {% else %}
+        <div class="col text-center">
+          <p class="text-body-dark text-center">식단이 없습니다. 식단을 생성해주세요.</p>
+          <a href="/make-meal-plan" class="btn btn-dark text-white"> 생성하러 가기 </a>
         </div>
         {% endif %}
       </div>
     </div>
-  </form>
+  </div>
 </main>
 {% endblock %}

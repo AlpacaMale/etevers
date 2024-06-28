@@ -1,15 +1,13 @@
 {% extends "layout.html" %} {% block body %}
 
-<main class="container d-flex align-items-center justify-content-center" style="margin-top: 100px; margin-bottom: 100px;">
-  <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px;">
+<main class="container d-flex align-items-center justify-content-center" style="margin-top: 100px; margin-bottom: 100px">
+  <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
     <p class="text-center fw-bold fs-1 mb-5">Register</p>
     <form class="needs-validation" action="/register" method="post" novalidate>
       <div class="mb-3">
         <label class="form-label" for="email">Email</label>
         <input class="form-control" type="email" name="email" required id="email" />
-        <div class="invalid-feedback">
-          이메일을 입력해주세요
-        </div>
+        <div class="invalid-feedback">이메일을 입력해주세요</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="password">Password</label>
@@ -40,14 +38,13 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label" for="dietary_belief">dietary_belief</label>
-        <input class="form-control" type="text" name="dietary_belief" required id="dietary_belief" />
+        <label class="form-label" for="dietary_belief">식성</label>
+        <input class="form-control" type="text" name="dietary_belief" required id="dietary_belief" placeholder="ex) 채식주의, 당뇨있음, 독실한 힌두교인 등" />
       </div>
 
       <div class="mb-3">
         <label class="form-label" for="exercise_frequency">일주일에 몇번운동합니까</label>
-        <input class="form-control" type="number" name="exercise_frequency" required id="exercise_frequency" min="0"
-          max="7" />
+        <input class="form-control" type="number" name="exercise_frequency" required id="exercise_frequency" min="0" max="7" />
       </div>
 
       <div class="input-group mb-3">

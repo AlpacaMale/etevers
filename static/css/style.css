@@ -1,42 +1,43 @@
 @font-face {
-	font-family: 'Pretendard Variable';
-	font-weight: 45 920;
-	font-style: normal;
-	font-display: swap;
-	src: url('../fonts/PretendardVariable.woff2') format('woff2-variations');
+    font-family: 'Pretendard Variable';
+    font-weight: 45 920;
+    font-style: normal;
+    font-display: swap;
+    src: url('../fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
 .content {
-  height: calc(100vh - 66.4px); /* 56px은 기본 네비게이션 바 높이 */
+    height: calc(100vh - 66.4px);
+    /* 56px은 기본 네비게이션 바 높이 */
 }
 
-body{
+body {
     font-family: 'Pretendard Variable';
     background-color: #fec422;
 }
 
-#index_bg{
+#index_bg {
     background-image: url(../images/bg.png);
     background-repeat: no-repeat;
     background-position: center;
 }
 
-.navbar{
+.navbar {
     --bs-navbar-padding-y: 0.8rem;
 }
 
-.left-box{
+.left-box {
     text-align: left;
 }
 
-.left-box .text-top{
+.left-box .text-top {
     font-family: 'Pretendard Variable';
     font-weight: bold;
     font-size: 56px;
     line-height: 80px;
 }
 
-.left-box .text-bottom{
+.left-box .text-bottom {
     font-family: 'Pretendard Variable';
     font-weight: 500;
     font-size: 18px;
@@ -45,11 +46,11 @@ body{
 }
 
 
-.start-btn:link{
+.start-btn:link {
     text-decoration: none;
 }
 
-.start-btn{
+.start-btn {
     font-family: 'Pretendard Variable';
     color: black;
     border: 1px solid black;
@@ -62,18 +63,15 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
 
-.form-control.is-valid, .was-validated .form-control:valid{
+.form-control.is-valid,
+.was-validated .form-control:valid {
     background-image: none;
 }
 
-.btn-radio{
-    border-radius: 5rem;
-    border: 2px solid;
-    font-weight: bold;
-}
-.btn-outline-success {
-    --bs-btn-color: rgba(25,135,84, 0.5);
-}
-.btn-outline-danger {
-    --bs-btn-color: rgba(220,53,69, 0.5);
+.mbtn {
+    --bs-btn-padding-x: 9.8px;
+    --bs-btn-padding-y: 6px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-left: 12px;
 }

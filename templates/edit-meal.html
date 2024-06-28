@@ -1,0 +1,93 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5">
+    <p class="fw-bold fs-1">나의 식단</p>
+    <p class="fs-5">오늘의 식사입니다.</p>
+    <form action="/edit-meal" method="post">
+      <div class="input-group">
+        <input name="date" required value="{{ date }}" type="date" class="form-control bg-light-subtle" />
+        <button class="btn btn-dark text-white" type="submit">확인</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<main class="container" style="width: 80%">
+  <form action="/edit-meal" method="post">
+    <div class="p-5 pt-0">
+      <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
+        <div class="row">
+          <div class="col">
+            <p class="text-center fw-bold fs-4">AI 추천 식단</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end"></div>
+          </div>
+        </div>
+        <div class="row">
+          <p class="fs-5 col">{{ date.strftime("%Y-%m-%d") }}</p>
+          <div class="col text-end">
+            {% if user_meal_data %}
+            <button type="button" class="btn btn-dark text-white text-end" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
+            {% endif %}
+          </div>
+        </div>
+        <div class="mb-4" style="border: 1px solid black"></div>
+        <div class="mb-3 p-4 bg-body-secondary text-center">
+          {% if user_meal_data %} {% for meal_time in ['breakfast', 'lunch', 'dinner', 'snack'] %} {% if user_meal_data.get(meal_time) %}
+          <p class="fw-bold fs-3">{{ meal_time }}</p>
+          {% for meal in user_meal_data[meal_time] %} {% for food_item, meal_id in meal.items() %}
+          <p class="fs-4">
+            {{ food_item }}
+            <button class="btn btn-danger mbtn" for="{{ meal_id }}" value="{{ meal_id }}" name="missed_meal_id">ㅡ</button>
+          </p>
+          {% endfor %} {% endfor %} {% endif %} {% endfor %} {% endif %} {% if user_missed_meal_datas %}
+          <div class="mb-4" style="border: 1px solid black"></div>
+          <p class="text-center fw-bold fs-4">discard changes</p>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end"></div>
+          {% for meal_time, food_item, meal_id in user_missed_meal_datas %}
+          <p class="fs-4">
+            {{ meal_time }} {{ food_item }}
+            <button class="btn btn-primary mbtn" for="{{ meal_id }}" value="{{ meal_id }}" name="completed_meal_id">+</button>
+          </p>
+          {% endfor %} {% endif %}
+        </div>
+        <div class="row">
+          <div class="text-center">
+            <a href="/main" class="btn btn-dark text-white">Done</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</main>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">음식 추가</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/edit-meal" method="post">
+          <div class="mb-3">
+            <label class="form-label" for="meal_time">식사시간</label>
+            <select required class="form-select" name="meal_time" id="meal_time">
+              {% for value in time %}
+              <option value="{{value}}">{{value}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">먹은 음식</label>
+            <input required type="text" name="food_item" class="form-control" id="message-text" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
