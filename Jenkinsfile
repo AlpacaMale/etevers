@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 푸시
-                    // sh 'docker push ${AWS_ECR_REPO}:${IMAGE_TAG}'
+                    sh 'docker push ${AWS_ECR_REPO}:${IMAGE_TAG}'
                     sh 'docker push ${AWS_ECR_REPO}:latest'
                 }
             }
