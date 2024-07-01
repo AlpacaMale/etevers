@@ -28,6 +28,8 @@ pipeline {
                     sh '''
                     aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_REPO}
                     '''
+
+                    echo "IMAGE_TAG is set to: ${env.IMAGE_TAG}"
                     
                     // Docker 이미지 빌드
                     sh 'docker build -t backend:${IMAGE_TAG} .'
