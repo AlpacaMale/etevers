@@ -2,12 +2,12 @@ pipeline {
     agent any
     
     environment {
-        AWS_ECR_REPO = '471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend'
-        GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
+        AWS_ECR_REPO = '471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/frontend'
+        GIT_CREDENTIALS_ID = 'Jenkins_frontend_credential'
         ECR_REGION = 'ap-northeast-2'
-        IMAGE_TAG = "${env.BUILD_NUMBER}" // 빌드 번호를 태그로 사용
-        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifast.git'
-        MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"  // 빌드 번호를 태그로 사용
+        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_frontend_manifast.git'
+        MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_front_manifast_credential'
     }
     
     stages {
@@ -16,7 +16,7 @@ pipeline {
                 script {
                     git branch: 'main',
                         credentialsId: "${GIT_CREDENTIALS_ID}",
-                        url: 'https://github.com/Mozo119/Jenkins_backend.git'
+                        url: 'https://github.com/Mozo119/Jenkins_frontend.git'
                 }
             }
         }
@@ -30,11 +30,11 @@ pipeline {
                     '''
                     
                     // Docker 이미지 빌드
-                    sh 'docker build --no-cache -t backend:${IMAGE_TAG} .'
+                    sh 'docker build --no-cache -t frontend:${IMAGE_TAG} .'
                     
                     // Docker 이미지 태그
-                    sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}'
-                    sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:latest'
+                    sh 'docker tag frontend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}'
+                    sh 'docker tag frontend:${IMAGE_TAG} ${AWS_ECR_REPO}:latest'
                 }
             }
         }
@@ -55,27 +55,16 @@ pipeline {
                     script {
                         // 매니페스트 레포지토리 업데이트
                         sh '''
-                        rm -rf Jenkins_backend_manifast
+                        rm -rf Jenkins_frontend_manifast
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
-                        cd Jenkins_backend_manifast
-                        cp deployment.yaml deployment.yaml.bak
+                        cd Jenkins_frontend_manifast
                         sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
                         sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
-                        echo "Before change:"
-                        cat deployment.yaml.bak
-                        echo "After change:"
-                        cat deployment.yaml
-                        # Add a harmless change to ensure the file is updated
-                        echo "# Automated change to trigger update" >> deployment.yaml
-                        if ! cmp -s deployment.yaml deployment.yaml.bak; then
-                            git config --global user.email "rlaalstjr0502@gmail.com"
-                            git config --global user.name "Mozo119"
-                            git add deployment.yaml
-                            git commit -m "Update image to ${IMAGE_TAG} with automated change"
-                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
-                        else
-                            echo "Nothing to commit"
-                        fi
+                        git config --global user.email "rlaalstjr0502@gmail.com"
+                        git config --global user.name "Mozo119"
+                        git add deployment.yaml
+                        git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         '''
                     }
                 }
@@ -95,12 +84,6 @@ pipeline {
                     '''
                 }
             }
-        }
-    }
-    
-    post {
-        always {
-            cleanWs()
         }
     }
 }
