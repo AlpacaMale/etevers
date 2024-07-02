@@ -25,22 +25,40 @@
         <p class="fs-5 col">{{ date.strftime("%Y-%m-%d") }}</p>
         <div class="col text-end">
           {% if user_meal_data %}
-          <a href="/edit-meal" class="btn btn-dark text-white">go to edit</a>
+          <a href="/edit-meal" class="btn btn-dark text-white">수정하기</a>
           {% endif %}
         </div>
       </div>
-      <div class="mb-3 p-4 bg-body-secondary text-center">
-        {% if user_meal_data %} {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] %} {% if user_meal_data.get(meal_type) %}
-        <p class="fw-bold fs-3">{{ meal_type }}</p>
-        {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
-        <p class="fs-4">{{ food_item }}</p>
-        {% endfor %} {% endfor %} {% endif %} {% endfor %} {% else %}
+      <div class="mb-4" style="border: 1px solid black"></div>
+      {% if user_meal_data %}
+      <div id="carousel" class="carousel slide carousel-dark">
+        <div class="carousel-inner">
+          {% for meal_type in user_meal_data.keys() %} {% if user_meal_data.get(meal_type) %}
+          <div class="carousel-item {% if loop.first %}active{% endif %}">
+            <p class="text-center fw-bold fs-3">{{ meal_type }}</p>
+            {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
+            <p class="text-center fs-4">{{ food_item }}</p>
+            {% endfor %} {% endfor %}
+          </div>
+          {% endif %} {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      {% else %}
+      <div class="carousel-item active">
         <div class="col text-center">
           <p class="text-body-dark text-center">식단이 없습니다. 식단을 생성해주세요.</p>
           <a href="/make-meal-plan" class="btn btn-dark text-white"> 생성하러 가기 </a>
         </div>
-        {% endif %}
       </div>
+      {% endif %}
     </div>
   </div>
 </main>

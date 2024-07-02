@@ -1,77 +1,76 @@
 @font-face {
-    font-family: 'Pretendard Variable';
-    font-weight: 45 920;
-    font-style: normal;
-    font-display: swap;
-    src: url('../fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-family: "Pretendard Variable";
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url("../fonts/PretendardVariable.woff2") format("woff2-variations");
 }
 
 .content {
-    height: calc(100vh - 66.4px);
-    /* 56px은 기본 네비게이션 바 높이 */
+  height: calc(100vh - 66.4px);
+  /* 56px은 기본 네비게이션 바 높이 */
 }
 
 body {
-    font-family: 'Pretendard Variable';
-    background-color: #fec422;
+  font-family: "Pretendard Variable";
+  background-color: #fec422;
 }
 
 #index_bg {
-    background-image: url(../images/bg.png);
-    background-repeat: no-repeat;
-    background-position: center;
+  background-image: url(../images/bg.png);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .navbar {
-    --bs-navbar-padding-y: 0.8rem;
+  --bs-navbar-padding-y: 0.8rem;
 }
 
 .left-box {
-    text-align: left;
+  text-align: left;
 }
 
 .left-box .text-top {
-    font-family: 'Pretendard Variable';
-    font-weight: bold;
-    font-size: 56px;
-    line-height: 80px;
+  font-family: "Pretendard Variable";
+  font-weight: bold;
+  font-size: 56px;
+  line-height: 80px;
 }
 
 .left-box .text-bottom {
-    font-family: 'Pretendard Variable';
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 34px;
-    margin-bottom: 50px;
+  font-family: "Pretendard Variable";
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 34px;
+  margin-bottom: 50px;
 }
 
-
 .start-btn:link {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .start-btn {
-    font-family: 'Pretendard Variable';
-    color: black;
-    border: 1px solid black;
-    padding: 14px 38px;
+  font-family: "Pretendard Variable";
+  color: black;
+  border: 1px solid black;
+  padding: 14px 38px;
 }
 
 input::-webkit-inner-spin-button {
-    appearance: none;
-    -moz-appearance: none;
-    -webkit-appearance: none;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
 }
 
 .form-control.is-valid,
 .was-validated .form-control:valid {
-    background-image: none;
+  background-image: none;
 }
 
 .mbtn {
-    --bs-btn-padding-x: 9.8px;
-    --bs-btn-padding-y: 6px;
-    border-radius: 20px;
-    font-size: 12px;
-    margin-left: 12px;
+  --bs-btn-padding-x: 9.8px;
+  --bs-btn-padding-y: 6px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-left: 12px;
 }
