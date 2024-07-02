@@ -65,11 +65,13 @@ pipeline {
                         cat deployment.yaml.bak
                         echo "After change:"
                         cat deployment.yaml
+                        # Add a harmless change to ensure the file is updated
+                        echo "# Automated change to trigger update" >> deployment.yaml
                         if ! cmp -s deployment.yaml deployment.yaml.bak; then
                             git config --global user.email "rlaalstjr0502@gmail.com"
                             git config --global user.name "Mozo119"
                             git add deployment.yaml
-                            git commit -m "Update image to ${IMAGE_TAG}"
+                            git commit -m "Update image to ${IMAGE_TAG} with automated change"
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         else
                             echo "Nothing to commit"
