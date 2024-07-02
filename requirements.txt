@@ -19,3 +19,4 @@ typing_extensions==4.12.2
 uWSGI==2.0.26
 Werkzeug==3.0.3
 zipp==3.19.2
+cryptography
