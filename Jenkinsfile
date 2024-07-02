@@ -7,7 +7,7 @@ pipeline {
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}" // 빌드 번호를 태그로 사용
         MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifest.git'
-        MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifest_credential'
+        MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
     }
     
     stages {
@@ -63,8 +63,6 @@ pipeline {
                         echo "Updating deployment.yaml with AWS_ECR_REPO: ${AWS_ECR_REPO} and IMAGE_TAG: ${IMAGE_TAG}"
                         sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
                         sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
-                        echo "Contents of deployment.yaml after sed:"
-                        cat deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
