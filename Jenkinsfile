@@ -63,6 +63,7 @@ pipeline {
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
+                        git add service.yaml
                         git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         '''
