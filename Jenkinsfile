@@ -6,18 +6,19 @@ pipeline {
         GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}" // 빌드 번호를 태그로 사용
+        BACKEND_REPO = 'https://github.com/Mozo119/Jenkins_backend.git'
         MANIFEST_REPO = 'https://github.com/Mozo119/Jenkins_backend_manifest.git'
         MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifest_credential'
     }
     
     stages {
-        stage('Checkout') {
+        stage('Checkout Backend Repository') {
             steps {
-                // GitHub에서 소스 코드 체크아웃
+                // 젠킨스 백엔드 레포지토리에서 소스 코드 체크아웃
                 script {
                     git branch: 'main',
                         credentialsId: "${GIT_CREDENTIALS_ID}",
-                        url: "${MANIFEST_REPO}"
+                        url: "${BACKEND_REPO}"
                 }
             }
         }
@@ -51,8 +52,11 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     script {
                         sh '''
-                        sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
-                        sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
+                        sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' Jenkins_backend_manifest/deployment.yaml
+                        sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' Jenkins_backend_manifest/deployment.yaml
+                        cd Jenkins_backend_manifest
+                        git config --global user.email "rlaalstjr0502@gmail.com"
+                        git config --global user.name "Mozo119"
                         git add deployment.yaml
                         git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
