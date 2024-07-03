@@ -6,7 +6,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}" // 빌드 번호를 태그로 사용
-        MANIFEST_REPO = 'https://github.com/Mozo119/Jenkins_backend_manifast.git'
+        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifast.git'
         MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
     }
     
@@ -15,8 +15,8 @@ pipeline {
             steps {
                 script {
                     git branch: 'main',
-                    credentialsId: "${GIT_CREDENTIALS_ID}",
-                    url: 'https://github.com/Mozo119/Jenkins_backend.git'
+                        credentialsId: "${GIT_CREDENTIALS_ID}",
+                        url: 'https://github.com/Mozo119/Jenkins_backend.git'
                 }
             }
         }
@@ -48,18 +48,18 @@ pipeline {
                 }
             }
         }
+        
         stage('Update Manifest Repository') {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     script {
                         // 매니페스트 레포지토리 업데이트
                         sh '''
-                        rm -rf Jenkins_backend_manifest
-                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO} Jenkins_backend_manifest
-                        cd Jenkins_backend_manifest
-                        ls -la  // 디렉토리 내의 파일 목록 확인 (디버깅용)
-                        sed -i "s|{{AWS_ECR_REPO}}|${AWS_ECR_REPO}|g" deployment.yaml
-                        sed -i "s|{{IMAGE_TAG}}|${IMAGE_TAG}|g" deployment.yaml
+                        rm -rf Jenkins_backend_manifast
+                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
+                        cd Jenkins_backend_manifast
+                        sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
+                        sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
@@ -70,8 +70,6 @@ pipeline {
                 }
             }
         }
-      
-
         
         stage('Clean Up Old Docker Images') {
             steps {
