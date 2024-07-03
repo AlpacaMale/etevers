@@ -56,18 +56,18 @@ pipeline {
                     script {
                         sh '''
                         rm -rf ${REPO_PATH}
-                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO} ${REPO_PATH}
+                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Mozo119/Jenkins_backend_manifast.git ${REPO_PATH}
                         cd ${REPO_PATH}
                         echo "Before update:"
                         cat deployment.yaml
-                        sed -i 's|${AWS_ECR_REPO}:[^"]*|${AWS_ECR_REPO}:${IMAGE_TAG}|g' deployment.yaml
+                        sed -i 's|471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend:[^"]*|471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend:'${IMAGE_TAG}'|g' deployment.yaml
                         echo "After update:"
                         cat deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
                         git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Mozo119/Jenkins_backend_manifast.git
                         '''
                     }
                 }
