@@ -1,8 +1,9 @@
 from flask import redirect, session, g, jsonify, current_app
 from models import db
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.exc import OperationalError
 from functools import wraps
+from ping3 import ping
+from config import DB_ROUTE, RDS_ROUTE
 
 
 def error(code):
@@ -40,9 +41,9 @@ def teardown_request(exception):
 
 
 def get_primary_db():
-    try:
+    if ping(DB_ROUTE, timeout=0.1):
         return get_db("db")
-    except OperationalError:
+    else:
         return get_db("rds")
 
 
