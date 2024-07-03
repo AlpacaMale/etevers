@@ -1,6 +1,5 @@
 # webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify
-from function import login_required, get_db, teardown_request, error
 from datetime import date as dt_date, timedelta, datetime
 from config import Config
 from models import (
@@ -17,17 +16,13 @@ from models import (
 )
 from create import create_meal_plan_items
 from sqlalchemy import asc, desc
-
-# from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-
-@app.before_request
-def before_request():
-    get_db()
+from function import login_required, get_db, teardown_request, error
 
 
 @app.teardown_request
@@ -51,7 +46,7 @@ def about_us():
 @app.route("/profile", methods=["GET"])
 @login_required
 def profile():
-    db = get_db()
+    db = get_db("db")
     session["prev_page"] = "/profile"
     email = session.get("email")
     user_profile = db.query(UserProfile).filter_by(users_email=email).first()
@@ -93,7 +88,7 @@ def profile():
 @app.route("/edit-user-profile", methods=["GET", "POST"])
 @login_required
 def edit_user_profile():
-    db = get_db()
+    db = get_db("db")
     email = session.get("email")
     user_profile = db.query(UserProfile).filter_by(users_email=email).first()
 
@@ -146,7 +141,7 @@ def edit_user_profile():
 @app.route("/deregister", methods=["GET", "POST"])
 def deregister():
     if request.method == "POST":
-        db = get_db()
+        db = get_db("db")
         email = session.get("email")
         user = db.query(User).filter_by(email=email).first()
 
@@ -176,7 +171,7 @@ def deregister():
 @app.route("/input", methods=["GET", "POST"])
 @login_required
 def input():
-    db = get_db()
+    db = get_db("db")
     if request.method == "POST":
         meal_plan_items = request.form.to_dict()
         print(meal_plan_items)
@@ -205,7 +200,7 @@ def input():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        db = get_db()
+        db = get_db("db")
         login_data = request.form.to_dict()
         email = login_data.get("email")
         password = login_data.get("password")
@@ -232,7 +227,7 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        db = get_db()
+        db = get_db("db")
         register_data = request.form.to_dict()
         print(register_data)
         email = register_data.get("email")
@@ -282,7 +277,7 @@ def register():
 def view_weight_record():
     session["prev_page"] = "/view-weight-record"
     email = session.get("email")
-    db = get_db()
+    db = get_db("db")
     weight_datas = (
         db.query(WeightRecord)
         .filter_by(users_email=email)
@@ -303,7 +298,7 @@ def view_weight_record():
 @login_required
 def write_weight_record():
     if request.method == "POST":
-        db = get_db()
+        db = get_db("db")
         weight_data = request.form.to_dict()
         print(weight_data)
         email = session.get("email")
@@ -351,7 +346,7 @@ def write_weight_record():
 @app.route("/view-meal-preference", methods=["GET"])
 @login_required
 def view_meal_preference():
-    db = get_db()
+    db = get_db("db")
     session["prev_page"] = "/view-meal-preference"
     email = session.get("email")
     preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
@@ -375,7 +370,7 @@ def view_meal_preference():
 @login_required
 def write_meal_preference():
     if request.method == "POST":
-        db = get_db()
+        db = get_db("db")
         preference_data_data = request.form.to_dict()
         print(preference_data_data)
         email = session.get("email")
@@ -409,7 +404,7 @@ def write_meal_preference():
 @app.route("/make-meal-plan", methods=["GET", "POST"])
 @login_required
 def make_meal_plan():
-    db = get_db()
+    db = get_db("db")
     if request.method == "POST":
         email = session.get("email")
         today = dt_date.today()
@@ -464,7 +459,7 @@ def main():
         print(session["date"])
         return redirect("/main")
     else:
-        db = get_db()
+        db = get_db("db")
         email = session.get("email")
 
         if session.get("date") is None:
@@ -515,7 +510,7 @@ def main():
 @app.route("/edit-meal", methods=["GET", "POST"])
 @login_required
 def edit_meal():
-    db = get_db()
+    db = get_db("db")
     if request.method == "POST":
         meal_data = request.form.to_dict()
 
