@@ -6,7 +6,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}"  // 빌드 번호를 태그로 사용
-        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifast.git'
+        MANIFEST_REPO = 'https://github.com/Mozo119/Jenkins_backend_manifast.git'
         MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
         REPO_PATH = "/var/lib/jenkins/workspace/Jenkins_backend_pipeline/Jenkins_backend_manifast"
     }
