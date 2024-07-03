@@ -1,6 +1,7 @@
 from flask import redirect, session, g, jsonify, current_app
 from models import db
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.exc import OperationalError
 from functools import wraps
 
 
@@ -36,6 +37,13 @@ def teardown_request(exception):
         if session is not None:
             session.remove()
             delattr(g, f"{bind_key}_db")
+
+
+def get_primary_db():
+    try:
+        return get_db("db")
+    except OperationalError:
+        return get_db("rds")
 
 
 def login_required(f):

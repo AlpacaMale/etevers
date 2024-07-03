@@ -33,14 +33,14 @@
       {% if user_meal_data %}
       <div id="carousel" class="carousel slide carousel-dark">
         <div class="carousel-inner">
-          {% for meal_type in user_meal_data.keys() %} {% if user_meal_data.get(meal_type) %}
-          <div class="carousel-item {% if loop.first %}active{% endif %}">
+          {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] if user_meal_data.get(meal_type) %}
+          <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
             <p class="text-center fw-bold fs-3">{{ meal_type }}</p>
             {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
             <p class="text-center fs-4">{{ food_item }}</p>
             {% endfor %} {% endfor %}
           </div>
-          {% endif %} {% endfor %}
+          {% endfor %}
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
