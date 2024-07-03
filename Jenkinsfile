@@ -6,7 +6,7 @@ pipeline {
         GIT_CREDENTIALS_ID = 'Jenkins_backend_credential'
         ECR_REGION = 'ap-northeast-2'
         IMAGE_TAG = "${env.BUILD_NUMBER}"  // 빌드 번호를 태그로 사용
-        MANIFEST_REPO = 'https://github.com/Mozo119/Jenkins_backend_manifast.git'
+        MANIFEST_REPO = 'github.com/Mozo119/Jenkins_backend_manifast.git'
         MANIFEST_REPO_CREDENTIALS_ID = 'Jenkins_backend_manifast_credential'
         REPO_PATH = "/var/lib/jenkins/workspace/Jenkins_backend_pipeline/Jenkins_backend_manifast"
     }
@@ -60,7 +60,7 @@ pipeline {
                         cd ${REPO_PATH}
                         echo "Before update:"
                         cat deployment.yaml
-                        sed -i 's|471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend:[^"]*|471112869272.dkr.ecr.ap-northeast-2.amazonaws.com/backend:'${IMAGE_TAG}'|g' deployment.yaml
+                        sed -i 's|${AWS_ECR_REPO}:[^"]*|${AWS_ECR_REPO}:${IMAGE_TAG}|g' deployment.yaml
                         echo "After update:"
                         cat deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
