@@ -58,8 +58,8 @@ pipeline {
                         rm -rf Jenkins_backend_manifast
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         cd Jenkins_backend_manifast
-                        sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
-                        sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
+                        sed -i "s|{{AWS_ECR_REPO}}|${AWS_ECR_REPO}|g" deployment.yaml
+                        sed -i "s|{{IMAGE_TAG}}|${IMAGE_TAG}|g" deployment.yaml
                         git config --global user.email "rlaalstjr0502@gmail.com"
                         git config --global user.name "Mozo119"
                         git add deployment.yaml
