@@ -30,7 +30,7 @@ pipeline {
                     '''
                     
                     // Docker 이미지 빌드
-                    sh 'docker build --no-cache -t backend:${IMAGE_TAG} .'
+                    sh 'docker build -t backend:${IMAGE_TAG} .'
                     
                     // Docker 이미지 태그
                     sh 'docker tag backend:${IMAGE_TAG} ${AWS_ECR_REPO}:${IMAGE_TAG}'
@@ -58,24 +58,13 @@ pipeline {
                         rm -rf Jenkins_backend_manifast
                         git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         cd Jenkins_backend_manifast
-                        cp deployment.yaml deployment.yaml.bak
                         sed -i 's|{{AWS_ECR_REPO}}|'${AWS_ECR_REPO}'|g' deployment.yaml
                         sed -i 's|{{IMAGE_TAG}}|'${IMAGE_TAG}'|g' deployment.yaml
-                        echo "Before change:"
-                        cat deployment.yaml.bak
-                        echo "After change:"
-                        cat deployment.yaml
-                        # Add a harmless change to ensure the file is updated
-                        echo "# Automated change to trigger update" >> deployment.yaml
-                        if ! cmp -s deployment.yaml deployment.yaml.bak; then
-                            git config --global user.email "rlaalstjr0502@gmail.com"
-                            git config --global user.name "Mozo119"
-                            git add deployment.yaml
-                            git commit -m "Update image to ${IMAGE_TAG} with automated change"
-                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
-                        else
-                            echo "Nothing to commit"
-                        fi
+                        git config --global user.email "rlaalstjr0502@gmail.com"
+                        git config --global user.name "Mozo119"
+                        git add deployment.yaml
+                        git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
                         '''
                     }
                 }
