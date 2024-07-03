@@ -48,34 +48,29 @@ pipeline {
                 }
             }
         }
-       stage('Update Manifest Repository') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-            script {
-                // Clone the repository
-                sh "rm -rf Jenkins_backend_manifest"
-                sh "git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Mozo119/Jenkins_backend_manifast.git Jenkins_backend_manifest"
-
-                // Change directory
-                sh "cd Jenkins_backend_manifest"
-
-                // Update deployment.yaml with variables
-                sh "sed -i 's|{{AWS_ECR_REPO}}|${AWS_ECR_REPO}|g' deployment.yaml"
-                sh "sed -i 's|{{IMAGE_TAG}}|${IMAGE_TAG}|g' deployment.yaml"
-
-                // Configure Git user
-                sh "git config --global user.email 'rlaalstjr0502@gmail.com'"
-                sh "git config --global user.name 'Mozo119'"
-
-                // Add, commit, and push changes
-                sh "git add deployment.yaml"
-                def commitMessage = "Update image to ${IMAGE_TAG}"
-                sh "git commit -m '${commitMessage}' || echo 'Nothing to commit'"
-                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Mozo119/Jenkins_backend_manifast.git"
+        stage('Update Manifest Repository') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${MANIFEST_REPO_CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    script {
+                        // 매니페스트 레포지토리 업데이트
+                        sh '''
+                        rm -rf Jenkins_backend_manifest
+                        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO} Jenkins_backend_manifest
+                        cd Jenkins_backend_manifest
+                        ls -la  // 디렉토리 내의 파일 목록 확인 (디버깅용)
+                        sed -i "s|{{AWS_ECR_REPO}}|${AWS_ECR_REPO}|g" deployment.yaml
+                        sed -i "s|{{IMAGE_TAG}}|${IMAGE_TAG}|g" deployment.yaml
+                        git config --global user.email "rlaalstjr0502@gmail.com"
+                        git config --global user.name "Mozo119"
+                        git add deployment.yaml
+                        git commit -m "Update image to ${IMAGE_TAG}" || echo "Nothing to commit"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${MANIFEST_REPO}
+                        '''
+                    }
+                }
             }
         }
-    }
-}
+      
 
         
         stage('Clean Up Old Docker Images') {
