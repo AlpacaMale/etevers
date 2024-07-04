@@ -1,5 +1,5 @@
 # webhook test
-from flask import Flask, render_template, request, session, redirect, jsonify
+from flask import Flask, render_template, request, session, redirect, jsonify, send_file
 from datetime import date as dt_date, timedelta, datetime
 from config import Config
 from models import (
@@ -17,6 +17,7 @@ from models import (
 from create import create_meal_plan_items
 from sqlalchemy import asc, desc
 from flask_sqlalchemy import SQLAlchemy
+from graph import print_graph
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -64,8 +65,6 @@ def profile():
     for preference_data in preference_datas:
         print(
             preference_data.food_item,
-            preference_data.frequency_min,
-            preference_data.frequency_max,
         )
     print(
         user_profile.users_email,
@@ -210,9 +209,11 @@ def login():
 
         session["email"] = email
 
-        return redirect("/main")
-
         # 원래 가려고 했던 페이지를 세션에서 받아와서 리디렉션하는 로직
+        next_url = session.pop("next", None)
+        if next_url:
+            return redirect(next_url)
+        return redirect("/")
 
     else:
         return render_template("login.html")
@@ -275,7 +276,18 @@ def register():
 @app.route("/view-weight-record", methods=["GET"])
 @login_required
 def view_weight_record():
+    db = get_primary_db()
     session["prev_page"] = "/view-weight-record"
+    email = session.get("email")
+
+    user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+
+    return render_template("view-weight-record.html", user_profile=user_profile)
+
+
+@app.route("/plot.png", methods=["GET"])
+@login_required
+def plot_png():
     email = session.get("email")
     db = get_primary_db()
     weight_datas = (
@@ -284,14 +296,17 @@ def view_weight_record():
         .order_by(asc(WeightRecord.date))
         .all()
     )
-    user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+
+    user_data = {"dates": [], "weights": []}
 
     for weight_data in weight_datas:
         print(weight_data.users_email, weight_data.date, weight_data.weight)
+        user_data["dates"].append(weight_data.date)
+        user_data["weights"].append(weight_data.weight)
 
-    return render_template(
-        "view-weight-record.html", weight_datas=weight_datas, user_profile=user_profile
-    )
+    img = print_graph(user_data)
+
+    return send_file(img, mimetype="image/png")
 
 
 @app.route("/write-weight-record", methods=["GET", "POST"])
@@ -330,7 +345,7 @@ def write_weight_record():
             db.add(new_weight)
 
         db.commit()
-        prev_page = session.get("prev_page")
+        prev_page = session.pop("prev_page", None)
 
         if not prev_page:
             return redirect("/view-weight-record")
@@ -355,8 +370,6 @@ def view_meal_preference():
     for preference_data in preference_datas:
         print(
             preference_data.food_item,
-            preference_data.frequency_min,
-            preference_data.frequency_max,
         )
 
     return render_template(
@@ -375,19 +388,15 @@ def write_meal_preference():
         print(preference_data_data)
         email = session.get("email")
         food_item = preference_data_data.get("food_item")
-        frequency_min = preference_data_data.get("frequency_min")
-        frequency_max = preference_data_data.get("frequency_max")
 
         new_preference = MealPreference(
             users_email=email,
             food_item=food_item,
-            frequency_min=frequency_min,
-            frequency_max=frequency_max,
         )
         db.add(new_preference)
         db.commit()
 
-        prev_page = session.get("prev_page")
+        prev_page = session.pop("prev_page", None)
 
         if not prev_page:
             return redirect("/view-meal-preference")
@@ -434,7 +443,8 @@ def make_meal_plan():
         preference_foods = (
             db.query(MealPreference.food_item).filter_by(users_email=email).all()
         )
-        preference_foods = [food[0] for food in preference_foods]
+        preference_foods = ", ".join(food[0] for food in preference_foods)
+
         print(
             user_profile.users_email,
             user_profile.height,
@@ -482,6 +492,7 @@ def main():
             )
 
         user_meal_data = {}
+        user_missed_meal_datas = []
         for meal_plan_item in meal_plan_items:
 
             meal_plan_track = (
@@ -490,21 +501,28 @@ def main():
                 .first()
             )
             print(meal_plan_track)
-            if meal_plan_track.status == "missed":
-                continue
 
-            if user_meal_data.get(meal_plan_item.meal_time) is None:
-                user_meal_data[meal_plan_item.meal_time] = [
-                    {meal_plan_item.food_item: meal_plan_item.id}
-                ]
-            else:
-                user_meal_data[meal_plan_item.meal_time].append(
-                    {meal_plan_item.food_item: meal_plan_item.id}
+            if meal_plan_track.status == "missed":
+                user_missed_meal_datas.append(
+                    [
+                        meal_plan_item.meal_time,
+                        meal_plan_item.food_item,
+                        meal_plan_item.id,
+                    ]
                 )
+            else:
+                if user_meal_data.get(meal_plan_item.meal_time) is None:
+                    user_meal_data[meal_plan_item.meal_time] = [
+                        {meal_plan_item.food_item: meal_plan_item.id}
+                    ]
+                else:
+                    user_meal_data[meal_plan_item.meal_time].append(
+                        {meal_plan_item.food_item: meal_plan_item.id}
+                    )
 
         print(user_meal_data)
         print(date)
-        return render_template("main.html", user_meal_data=user_meal_data, date=date)
+        return render_template("main.html", user_meal_data=user_meal_data, date=date, user_missed_meal_datas=user_missed_meal_datas)
 
 
 @app.route("/edit-meal", methods=["GET", "POST"])

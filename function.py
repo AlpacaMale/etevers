@@ -3,7 +3,7 @@ from models import db
 from sqlalchemy.orm import scoped_session, sessionmaker
 from functools import wraps
 from ping3 import ping
-from config import DB_ROUTE, RDS_ROUTE
+from config import DB_PRIMARY_ROUTE, DB_SECONDARY_ROUTE, RDS_ROUTE
 
 
 def error(code):
@@ -41,16 +41,24 @@ def teardown_request(exception):
 
 
 def get_primary_db():
-    if ping(DB_ROUTE, timeout=0.1):
-        return get_db("db")
+    if ping(DB_PRIMARY_ROUTE, timeout=0.1):
+        return get_db("db_primary")
+    elif ping(DB_SECONDARY_ROUTE, timeout=0.1):
+        return get_db("db_secondary")
     else:
         return get_db("rds")
+
+
+from functools import wraps
+from flask import redirect, session, request
 
 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("email") is None:
+            # 사용자가 접근하려고 했던 URL을 세션에 저장
+            session["next"] = request.url
             return redirect("/login")
         return f(*args, **kwargs)
 

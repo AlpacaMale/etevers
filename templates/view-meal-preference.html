@@ -13,9 +13,9 @@
           <p class="fw-bold fs-4 text-center">{{ user_profile.users_email }} 님이 선호하는 음식</p>
         </div>
       </div>
-      <div class="mb-3 p-4 bg-body-secondary">
+      <div class="mb-3 p-4 shadow-sm rounded bg-body-secondary">
         {% if preference_datas is not none and preference_datas|length > 0 %} {% for preference_data in preference_datas %}
-        <p class="fs-4">{{ preference_data['food_item'] }}를 일주일에 {{ preference_data['frequency_min'] }} ~ {{ preference_data['frequency_max'] }}번 먹고싶습니다.</p>
+        <p class="fs-4">{{ preference_data['food_item'] }}</p>
         {% endfor %} {% else %}
         <p class="text-center fw-bold fs-3">선호하는 음식을 등록하세요</p>
         {% endif %}

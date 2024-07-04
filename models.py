@@ -59,8 +59,6 @@ class MealPreference(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     food_item = db.Column(db.String(255), nullable=False)
-    frequency_min = db.Column(db.Integer, nullable=False)
-    frequency_max = db.Column(db.Integer, nullable=False)
     users_email = db.Column(db.ForeignKey("users.email"), nullable=False, index=True)
 
     user = db.relationship(
@@ -79,7 +77,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
-class UserProfile(db.Model):
+class UserProfile(User):
     __tablename__ = "user_profile"
 
     height = db.Column(db.Numeric(5, 2), nullable=False)

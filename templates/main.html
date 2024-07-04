@@ -1,4 +1,6 @@
-{% extends "layout.html" %} {% block body %}
+{% extends "layout.html" %}
+
+{% block body %}
 <main class="container" style="width: 80%">
   <div class="p-5">
     <p class="fw-bold fs-1">나의 식단</p>
@@ -14,7 +16,7 @@
 
 <main class="container" style="width: 80%">
   <div class="p-5 pt-0">
-    <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
+    <div class="shadow-sm bg-body-tertiary rounded clearfix" style="padding: 80px 100px">
       <div class="row">
         <div class="col">
           <p class="text-center fw-bold fs-4">AI 추천 식단</p>
@@ -24,41 +26,48 @@
       <div class="row">
         <p class="fs-5 col">{{ date.strftime("%Y-%m-%d") }}</p>
         <div class="col text-end">
-          {% if user_meal_data %}
+          {% if user_meal_data or user_missed_meal_datas %}
           <a href="/edit-meal" class="btn btn-dark text-white">수정하기</a>
           {% endif %}
         </div>
       </div>
       <div class="mb-4" style="border: 1px solid black"></div>
+
       {% if user_meal_data %}
-      <div id="carousel" class="carousel slide carousel-dark">
-        <div class="carousel-inner">
-          {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] if user_meal_data.get(meal_type) %}
-          <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-            <p class="text-center fw-bold fs-3">{{ meal_type }}</p>
-            {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
-            <p class="text-center fs-4">{{ food_item }}</p>
-            {% endfor %} {% endfor %}
-          </div>
-          {% endfor %}
+
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] if user_meal_data.get(meal_type) %}
+          <button class="nav-link {% if loop.first %}active{% endif %}" id="pills-{{ meal_type }}-tab" data-bs-toggle="pill" data-bs-target="#pills-{{ meal_type }}" type="button" role="tab" aria-controls="pills-{{ meal_type }}" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">{{ meal_type }}</button>
+        {% endfor %}
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
+      </nav>
+
+      <div class="tab-content" id="pills-tabContent">
+        {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] if user_meal_data.get(meal_type) %}
+        <div class="p-3 tab-pane fade {% if loop.first %}show active{% endif %}" id="pills-{{ meal_type }}" role="tabpanel" aria-labelledby="pills-{{ meal_type }}-tab" tabindex="0">
+          {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
+          <p class="text-start fs-4">• {{ food_item }}</p>
+          {% endfor %} {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      {% elif user_missed_meal_datas %}
+      <div class="col text-center rounded bg-body-secondary" style="padding: 180px">
+        <p class="text-body-dark text-center">실제로 먹은 식단을 입력해주세요.</p>
+      </div>
+      <div class="col text-center mt-5">
+        <a href="/make-meal-plan" class="btn btn-dark text-white"> 생성하러 가기 </a>
       </div>
       {% else %}
-      <div class="carousel-item active">
-        <div class="col text-center">
+        <div class="col text-center rounded bg-body-secondary" style="padding: 180px">
           <p class="text-body-dark text-center">식단이 없습니다. 식단을 생성해주세요.</p>
+        </div>
+        <div class="col text-center mt-5">
           <a href="/make-meal-plan" class="btn btn-dark text-white"> 생성하러 가기 </a>
         </div>
-      </div>
       {% endif %}
+      </div>
     </div>
   </div>
 </main>

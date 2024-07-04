@@ -7,7 +7,7 @@
 <main class="container" style="width: 80%">
   <div class="p-5 pt-0">
     <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
-      <div class="row">
+      <div class="row mb-4">
         <div class="col">
           <p class="fw-bold fs-4">{{ user_profile.users_email }} 님의 프로필</p>
         </div>
@@ -15,37 +15,43 @@
           <a href="/profile" class="btn btn-dark text-white">프로필 수정</a>
         </div>
       </div>
-      <div class="mb-3 p-4 bg-body-secondary">
+      <div class="mb-3 p-4 shadow-sm rounded bg-body-secondary">
         <div class="row">
           <div class="col">
-            <p class="fs-4">키: {{ user_profile.height }}</p>
+            <p class="fw-bold fs-4">키</p>
+            <p class="fs-5">{{ user_profile.height }}</p>
           </div>
           <div class="col">
-            <p class="fs-4">무게: {{ user_profile.weight }}</p>
+            <p class="fw-bold fs-4">체중</p>
+            <p class="fs-5">{{ user_profile.weight }}</p>
           </div>
         </div>
         <div class="row">
           <div class="col">
-            <p class="fs-4">성별: {{ user_profile.sex }}</p>
+            <p class="fw-bold fs-4">성별</p>
+            <p class="fs-5">{{ user_profile.sex }}</p>
           </div>
           <div class="col">
-            <p class="fs-4">식성: {{ user_profile.dietary_belief }}</p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <p class="fs-4">주당 운동 횟수: {{ user_profile.exercise_frequency }}</p>
+            <p class="fw-bold fs-4">주당 운동 횟수</p>
+            <p class="fs-5">{{ user_profile.exercise_frequency }}</p>
           </div>
         </div>
         <div class="row">
           <div class="col">
-            <p class="fs-4">{{ user_profile.users_email }} 님이 선호하는 음식: {% for preference_food in preference_foods %}[ {{ preference_food }} ] {% endfor %}</p>
+            <p class="fw-bold fs-4">식습관</p>
+            <p class="fs-5">{{ user_profile.dietary_belief }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="fw-bold fs-4">선호하는 음식</p>
+            <p class="fs-5">{{ preference_foods }}</p>
           </div>
         </div>
       </div>
       <div class="row">
-        <div class="col text-center">
-          <p class="text-body-dark text-center">위의 정보를 기반으로 식단을 생성합니다</p>
+        <div class="col text-center mt-4">
+          <p class="text-body-dark text-center mb-4">위의 정보를 기반으로 식단을 생성합니다</p>
           <form action="/make-meal-plan" method="post">
             <button class="btn btn-dark text-white" type="submit">식단 생성하기</button>
           </form>

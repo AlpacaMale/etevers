@@ -5,15 +5,7 @@
     <form action="/write-meal-preference" method="post">
       <div class="mb-3">
         <label class="form-label" for="food_item">무엇을 먹는걸 선호하나요</label>
-        <input class="form-control" type="food_item" name="food_item" required id="food_item" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="frequency_min">일주일에 최소 N회 먹고싶습니다.</label>
-        <input class="form-control" type="number" name="frequency_min" required id="frequency_min" min="1" max="35" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="frequency_max">일주일에 최대 N회 먹고싶습니다.</label>
-        <input class="form-control" type="number" name="frequency_max" required id="frequency_max" min="1" max="35" />
+        <input class="form-control" type="food_item" name="food_item" required id="food_item" placeholder="ex) 면요리 일주일에 3번이상, 가지를 싫어합니다." />
       </div>
       <div class="d-grid">
         <button class="btn btn-dark text-white" type="submit">등록하기</button>
