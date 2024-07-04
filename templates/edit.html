@@ -1,0 +1,102 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 100%">
+    <div class="p-5">
+        <p class="fw-bold fs-1">나의 식단</p>
+        <p class="fs-5">오늘의 식사입니다.</p>
+        <form action="/main" method="post">
+            <div class="input-group">
+                <input name="date" required value="{{ date.strftime(" %Y-%m-%d") }}" type="date"
+                    class="form-control bg-light-subtle" />
+                <button class="btn btn-dark text-white" type="submit">확인</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<main class="container" style="width: 80%">
+    <form action="/edit-meal" method="post">
+        <div class="p-5 pt-0">
+            <div class="border border-3 border-dark rounded p-5 bg-light-subtle">
+                <div class="row">
+                    <div class="col">
+                        <p class="text-center fw-bold fs-4">AI 추천 식단</p>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <p class="fs-5 col">{{ date.strftime("%Y-%m-%d") }}</p>
+                    <div class="col text-end">
+                        {% if user_meal_data %}
+                        <button type="button" class="btn btn-dark text-white text-end" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">+</button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-4" style="border: 1px solid black"></div>
+                <div class="mb-3 p-4 bg-body-secondary text-center">
+                    {% if user_meal_data %} {% for meal_type in ['breakfast', 'lunch',
+                    'dinner', 'snack'] %} {% if user_meal_data.get(meal_type) %}
+                    <p class="fw-bold fs-3">{{ meal_type }}</p>
+                    {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id
+                    in meal.items() %}
+                    <p class="fs-4">
+                        {{ food_item }}
+                        <button class="btn btn-danger mbtn" for="{{ meal_id }}-{{ meal_type }}-no">ㅡ</button>
+                    </p>
+                    {% endfor %} {% endfor %} {% endif %} {% endfor %} {% else %}
+                    <div class="col text-center">
+                        <p class="text-body-dark text-center">
+                            식단이 없습니다. 식단을 생성해주세요.
+                        </p>
+                        <a href="/make-meal-plan" class="btn btn-dark text-white">
+                            생성하러 가기
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user_meal_data %}
+                <div class="row">
+                    <div class="text-center">
+                        <button class="btn btn-dark text-white" type="submit">
+                            Done
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</main>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">음식 추가</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="form-label" for="meal_time">식사시간</label>
+                        <select class="form-select" name="meal_time" id="meal_time">
+                            {% for value in meal_time %}
+                            <option value="{{value}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">먹은 음식</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
