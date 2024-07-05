@@ -1,11 +1,12 @@
 import redis
 
+DB_PRIMARY_ROUTE = "172.16.0.201"
+DB_SECONDARY_ROUTE = "172.16.0.202"
+RDS_ROUTE = "rds.crqgcai442on.ap-northeast-2.rds.amazonaws.com"
+REDIS_ROUTE = "172.16.0.51"
+
 
 class Config:
-    DB_PRIMARY_ROUTE = "172.16.0.201"
-    DB_SECONDARY_ROUTE = "172.16.0.202"
-    RDS_ROUTE = "rds.crqgcai442on.ap-northeast-2.rds.amazonaws.com"
-    REDIS_ROUTE = "172.16.0.51"
 
     SQLALCHEMY_BINDS = {
         "db_primary": f"mysql+pymysql://root:12345678@{ DB_PRIMARY_ROUTE }:3306/mydb",

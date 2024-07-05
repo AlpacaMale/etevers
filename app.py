@@ -1,7 +1,7 @@
 # webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify, send_file
 from flask_session import Session
-from datetime import date as dt_date, timedelta, datetime
+from datetime import date as dt_date, datetime
 from config import Config
 from models import (
     db,
