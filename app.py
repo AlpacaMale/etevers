@@ -1,5 +1,6 @@
 # webhook test
 from flask import Flask, render_template, request, session, redirect, jsonify, send_file
+from flask_session import Session
 from datetime import date as dt_date, timedelta, datetime
 from config import Config
 from models import (
@@ -18,10 +19,12 @@ from create import create_meal_plan_items
 from sqlalchemy import asc, desc
 from flask_sqlalchemy import SQLAlchemy
 from graph import print_graph
+import redis
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
+Session(app)
 
 from function import login_required, get_primary_db, teardown_request, error
 
@@ -522,7 +525,12 @@ def main():
 
         print(user_meal_data)
         print(date)
-        return render_template("main.html", user_meal_data=user_meal_data, date=date, user_missed_meal_datas=user_missed_meal_datas)
+        return render_template(
+            "main.html",
+            user_meal_data=user_meal_data,
+            date=date,
+            user_missed_meal_datas=user_missed_meal_datas,
+        )
 
 
 @app.route("/edit-meal", methods=["GET", "POST"])
