@@ -77,7 +77,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
 
 
-class UserProfile(User):
+class UserProfile(db.Model):
     __tablename__ = "user_profile"
 
     height = db.Column(db.Numeric(5, 2), nullable=False)

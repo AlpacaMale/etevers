@@ -1,4 +1,4 @@
-from flask import redirect, session, g, jsonify, current_app
+from flask import redirect, session, g, jsonify, current_app, request
 from models import db
 from sqlalchemy.orm import scoped_session, sessionmaker
 from functools import wraps
@@ -27,16 +27,16 @@ def get_db(bind_key):
     if not hasattr(g, f"{bind_key}_db"):
         engine = db.get_engine(current_app, bind=bind_key)
         session_factory = sessionmaker(bind=engine)
-        Session = scoped_session(session_factory)
-        setattr(g, f"{bind_key}_db", Session)
+        db_session = scoped_session(session_factory)
+        setattr(g, f"{bind_key}_db", db_session)
     return getattr(g, f"{bind_key}_db")
 
 
 def teardown_request(exception):
     for bind_key in ("db_primary", "db_secondary", "rds"):
-        session = getattr(g, f"{bind_key}_db", None)
-        if session is not None:
-            session.remove()
+        db_session = getattr(g, f"{bind_key}_db", None)
+        if db_session is not None:
+            db_session.remove()
             delattr(g, f"{bind_key}_db")
 
 
@@ -47,10 +47,6 @@ def get_primary_db():
         return get_db("db_secondary")
     else:
         return get_db("rds")
-
-
-from functools import wraps
-from flask import redirect, session, request
 
 
 def login_required(f):
