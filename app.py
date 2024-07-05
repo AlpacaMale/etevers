@@ -19,7 +19,6 @@ from create import create_meal_plan_items
 from sqlalchemy import asc, desc
 from flask_sqlalchemy import SQLAlchemy
 from graph import print_graph
-import redis
 
 app = Flask(__name__)
 app.config.from_object(Config)

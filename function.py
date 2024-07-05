@@ -33,7 +33,7 @@ def get_db(bind_key):
 
 
 def teardown_request(exception):
-    for bind_key in ("db", "rds"):
+    for bind_key in ("db_primary", "db_secondary", "rds"):
         session = getattr(g, f"{bind_key}_db", None)
         if session is not None:
             session.remove()

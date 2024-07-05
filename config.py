@@ -15,6 +15,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "redis"
-    SESSION_PERMANENT = "false"
-    SESSION_USE_SIGNER = "True"
-    SESSION_REDIS = redis.form_url(f"redis://{ REDIS_ROUTE }:6379")
+    SESSION_PERMANENT = False
+    SESSION_USE_SIGNER = True
+    SESSION_KEY_PREFIX = "flask:"
+    SESSION_REDIS = redis.StrictRedis(host=REDIS_ROUTE, port=6379, db=0)
