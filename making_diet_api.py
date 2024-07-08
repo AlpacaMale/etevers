@@ -1,25 +1,19 @@
-import requests
+import pathlib
+import textwrap
 import json
+import google.generativeai as genai
 
-# Geminai API 키
-GEMINAI_API_KEY = "AIzaSyDfsf7UiwEncSM8cTnRmOon5TTzZd7ZxFg"
+# API 키
+my_api_key = "AIzaSyCbMrzUXYOAg4vuDxYv5vwWQUkK6kUJIu8"
 
-def call_geminai_api(prompt, max_tokens=1024, temperature=0.6, top_p=0.9):
-    url = "https://api.openai.com/v1/completions"
-    headers = {
-        "Authorization": f"Bearer {GEMINAI_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "geminai-1.5",
-        "prompt": prompt,
-        "max_tokens": max_tokens,
-        "temperature": temperature,
-        "top_p": top_p
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    return response.json()["choices"][0]["text"]
+# Geminai API 키 설정
+genai.configure(api_key=my_api_key) 
+genai.project_id = "533241448251" 
+
+def call_geminai_api(prompt):
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
+    response = model.generate_content(prompt)
+    return response.text
 
 # test 용임!! 외부 DB 연결해야 함!!
 user_id = 1 
@@ -66,15 +60,19 @@ Please provide the output in JSON format with the following structure:
 
 ```json
 [
-  {
+  {{
     "start_date": "2024-06-20",
     "meal_type": "breakfast",
     "diet": "Oatmeal with fruits"
-  },
-  {
+  }},
+  {{
     "start_date": "2024-06-20",
     "meal_type": "lunch",
     "diet": "Chicken salad"
-  },
+  }},
   ...
-]
+]"""
+
+# test 용임!! 결과표시 화면임!!
+result = call_geminai_api(prompt)
+print(f"Input:\n{prompt}\n\nOutput:\n{result}\n\n{'='*30}\n")
