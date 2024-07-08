@@ -1,8 +1,8 @@
 import requests
 import json
 
-# Geminai API 키 입력
-GEMINAI_API_KEY = "YOUR_API_KEY"
+# Geminai API 키
+GEMINAI_API_KEY = "AIzaSyDfsf7UiwEncSM8cTnRmOon5TTzZd7ZxFg"
 
 def call_geminai_api(prompt, max_tokens=1024, temperature=0.6, top_p=0.9):
     url = "https://api.openai.com/v1/completions"
