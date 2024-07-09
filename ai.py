@@ -19,44 +19,45 @@ def create_meal_chain_1(user_info, preference_datas):
     period = 7
 
     prompt = f"""
-    I am a dietitian creating a meal plan for a {sex} client. They are {height} cm tall and weigh {weight} kg. 
-    They have indicated a preference for {background} and requested to include {must_have_item} in their diet. 
+    I am a dietitian creating a meal plan for a {sex} client. They are {height} cm tall and weigh {weight} kg.
+    They have indicated a preference for {background} and requested to include {must_have_item} in their diet.
 
-    Please create a detailed meal plan for a period of {period} days, starting from {start_date}. 
+    Please create a detailed meal plan for a period of {period} days, starting from {start_date}.
 
-    **Guidelines:**
+    Guidelines:
 
-    1. The daily diet should include breakfast, lunch, dinner, and snacks.
-    2. Create a diet reflecting the client's preferences and needs as much as possible.
-    3. "Background" and "Must have items" should be considered as much as possible unless they are fatal.
-    4. The diet should be enjoyable for daily consumption while maintaining a healthy balance.
-    5. Include the quantity of each food item in the description (e.g., "50 grams of spinach", "A plate of risotto").
-    6. Do not include any notes or explanations in the output.
-    7. Do not include markdown language in the output.
-
-    **Output format:**
+    The daily diet should include breakfast, lunch, dinner, and snacks.
+    Create a diet reflecting the client's preferences and needs as much as possible.
+    "Background" and "Must have items" should be considered as much as possible unless they are fatal.
+    The diet should be enjoyable for daily consumption while maintaining a healthy balance.
+    Include the quantity of each food item in the description (e.g., "50 grams of spinach", "A plate of risotto").
+    Do not include any notes or explanations in the output.
+    Do not include markdown language in the output.
+    Ensure the meal plan covers the entire specified period, not just one day.
+    Output format:
 
     [
-      {{
-        "date": "YYYY-MM-DD",
-        "meal_type": "breakfast",
-        "diet": "Description of the meal"
-      }},
-      {{
-        "date": "YYYY-MM-DD",
-        "meal_type": "lunch",
-        "diet": "Description of the meal"
-      }},
-      {{
-        "date": "YYYY-MM-DD",
-        "meal_type": "dinner",
-        "diet": "Description of the meal"
-      }},
-      {{
-        "start_date": "YYYY-MM-DD",
-        "meal_type": "snack",
-        "diet": "Description of the meal"
-      }}
+    {{
+    "date": "YYYY-MM-DD",
+    "meal_type": "breakfast",
+    "diet": "Description of the meal"
+    }},
+    {{
+    "date": "YYYY-MM-DD",
+    "meal_type": "lunch",
+    "diet": "Description of the meal"
+    }},
+    {{
+    "date": "YYYY-MM-DD",
+    "meal_type": "dinner",
+    "diet": "Description of the meal"
+    }},
+    {{
+    "date": "YYYY-MM-DD",
+    "meal_type": "snack",
+    "diet": "Description of the meal"
+    }}
+    ...
     ]
     """
 
