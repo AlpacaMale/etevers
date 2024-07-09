@@ -1,4 +1,5 @@
 from flask import redirect, session, g, jsonify, current_app, request
+import logging
 from models import (
     db,
     MealPlanItem,
@@ -65,6 +66,7 @@ def get_primary_db():
 
 def process_meal_plan(app, email, task_id, tasks, tasks_lock):
     with app.app_context():
+        logging.debug(f"Starting process_meal_plan for task_id: {task_id}")
         db = get_primary_db()
         today = dt_date.today()
         with tasks_lock:
@@ -73,11 +75,11 @@ def process_meal_plan(app, email, task_id, tasks, tasks_lock):
         preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
 
         response1 = create_meal_chain_1(user_info, preference_datas)
-        print(response1)
+        logging.debug(f"Response1: {response1}")
         response2 = create_meal_chain_2(response1)
-        print(response2)
+        logging.debug(f"Response1: {response2}")
         response3 = create_meal_chain_3(response2)
-        print(response3)
+        logging.debug(f"Response1: {response3}")
         try:
             meal_plan_items = json.loads(response3)
         except:
@@ -85,9 +87,12 @@ def process_meal_plan(app, email, task_id, tasks, tasks_lock):
             with tasks_lock:
                 tasks[task_id]["status"] = "error"
                 tasks[task_id]["error_msg"] = response4  # 에러 메시지를 딕셔너리에 저장
+            logging.debug(
+                f"Error in process_meal_plan for task_id: {task_id}, response4: {response4}"
+            )
             return
 
-        print(meal_plan_items)
+        logging.debug(f"Meal Plan Items: {meal_plan_items}")
 
         for meal_plan_item in meal_plan_items:
             new_meal_plan_item = MealPlanItem(
@@ -106,7 +111,7 @@ def process_meal_plan(app, email, task_id, tasks, tasks_lock):
             db.commit()
         with tasks_lock:
             tasks[task_id] = {"status": "complete", "error_msg": None}
-        return
+        logging.debug(f"Completed process_meal_plan for task_id: {task_id}")
 
 
 def login_required(f):

@@ -1,7 +1,17 @@
-from flask import Flask, render_template, request, session, redirect, jsonify, send_file
+from flask import (
+    Flask,
+    render_template,
+    request,
+    session,
+    redirect,
+    jsonify,
+    send_file,
+    copy_current_request_context,
+)
 from flask_session import Session
 from datetime import date as dt_date, datetime
 from config import Config
+import logging
 import threading
 import time as t_time
 from models import (
@@ -16,7 +26,6 @@ from models import (
     WeightRecord,
     ChatbotInteraction,
 )
-from create import create_meal_plan_items
 from sqlalchemy import asc, desc
 from flask_sqlalchemy import SQLAlchemy
 from graph import print_graph
@@ -453,10 +462,16 @@ def make_meal_plan():
         # 백그라운드 작업 실행
         with tasks_lock:
             task_status[task_id] = {"status": "in-progress", "error_msg": None}
+
+        @copy_current_request_context
+        def thread_function(email, task_id, tasks, tasks_lock):
+            process_meal_plan(app, email, task_id, tasks, tasks_lock)
+
+        logging.debug(f"Starting thread for task_id: {task_id}")
         threading.Thread(
-            target=process_meal_plan,
-            args=(app, email, task_id, task_status, tasks_lock),
+            target=thread_function, args=(email, task_id, task_status, tasks_lock)
         ).start()
+        logging.debug(f"Thread started for task_id: {task_id}")
 
         return render_template("loading.html", task_id=task_id)
 
