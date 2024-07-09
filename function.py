@@ -1,5 +1,4 @@
 from flask import redirect, session, g, jsonify, current_app, request
-from app import task_status, thread_local
 from models import (
     db,
     MealPlanItem,
@@ -81,10 +80,8 @@ def process_meal_plan(email, task_id, app):
             meal_plan_items = json.loads(response3)
         except:
             response4 = create_meal_chain_4(response2)
-            task_status[task_id]["status"] = "error"
-            task_status[task_id][
-                "error_msg"
-            ] = response4  # 에러 메시지를 딕셔너리에 저장
+            session[task_id]["status"] = "error"
+            session[task_id]["error_msg"] = response4  # 에러 메시지를 딕셔너리에 저장
             return
 
         print(meal_plan_items)
@@ -105,7 +102,7 @@ def process_meal_plan(email, task_id, app):
             db.add(new_meal_plan_tracking)
             db.commit()
 
-        task_status[task_id] = {"status": "complete", "error_msg": None}
+        session[task_id] = {"status": "complete", "error_msg": None}
 
 
 def login_required(f):
