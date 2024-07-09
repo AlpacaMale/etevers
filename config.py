@@ -19,4 +19,6 @@ class Config:
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_KEY_PREFIX = "flask:"
-    SESSION_REDIS = redis.StrictRedis(host=REDIS_ROUTE, port=6379, db=0)
+    SESSION_REDIS = redis.StrictRedis(
+        host=REDIS_ROUTE, port=6379, ssl=True, ssl_cert_reqs=None
+    )
