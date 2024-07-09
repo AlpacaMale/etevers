@@ -69,6 +69,7 @@ def process_meal_plan(email, task_id):
 
     user_info = db.query(UserProfile).filter_by(users_email=email).first()
     preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
+
     response1 = create_meal_chain_1(user_info, preference_datas)
     print(response1)
     response2 = create_meal_chain_2(response1)
@@ -79,8 +80,9 @@ def process_meal_plan(email, task_id):
         meal_plan_items = json.loads(response3)
     except:
         response4 = create_meal_chain_4(response2)
-        session[task_id]["status"] = "error"
-        session[task_id]["error_msg"] = response4  # 에러 메시지를 딕셔너리에 저장
+        with current_app.app_context():
+            session[task_id]["status"] = "error"
+            session[task_id]["error_msg"] = response4  # 에러 메시지를 딕셔너리에 저장
         return
 
     print(meal_plan_items)
@@ -101,7 +103,8 @@ def process_meal_plan(email, task_id):
         db.add(new_meal_plan_tracking)
         db.commit()
 
-    session[task_id] = {"status": "complete", "error_msg": None}
+        with current_app.app_context():
+            session[task_id] = {"status": "complete", "error_msg": None}
 
 
 def login_required(f):

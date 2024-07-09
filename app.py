@@ -449,9 +449,8 @@ def make_meal_plan():
         task_id = str(t_time.time())  # 간단한 task ID 생성
 
         # 백그라운드 작업 실행
-        with app.app_context():
-            session[task_id] = {"status": "in-progress", "error_msg": None}
-            threading.Thread(target=process_meal_plan, args=(email, task_id)).start()
+        session[task_id] = {"status": "in-progress", "error_msg": None}
+        threading.Thread(target=process_meal_plan, args=(email, task_id)).start()
 
         return render_template("loading.html", task_id=task_id)
 
