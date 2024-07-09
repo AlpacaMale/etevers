@@ -454,7 +454,8 @@ def make_meal_plan():
         with tasks_lock:
             task_status[task_id] = {"status": "in-progress", "error_msg": None}
         threading.Thread(
-            target=process_meal_plan, args=(email, task_id, task_status, tasks_lock)
+            target=process_meal_plan,
+            args=(app, email, task_id, task_status, tasks_lock),
         ).start()
 
         return render_template("loading.html", task_id=task_id)

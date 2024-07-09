@@ -63,8 +63,8 @@ def get_primary_db():
         return get_db("rds")
 
 
-def process_meal_plan(email, task_id, tasks, tasks_lock):
-    with current_app.app_context():
+def process_meal_plan(app, email, task_id, tasks, tasks_lock):
+    with app.app_context():
         db = get_primary_db()
         today = dt_date.today()
         with tasks_lock:
