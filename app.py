@@ -26,6 +26,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 Session(app)
+task_status = {}
+tasks_lock = threading.Lock()
 
 from function import (
     login_required,
@@ -449,8 +451,11 @@ def make_meal_plan():
         task_id = str(t_time.time())  # 간단한 task ID 생성
 
         # 백그라운드 작업 실행
-        session[task_id] = {"status": "in-progress", "error_msg": None}
-        threading.Thread(target=process_meal_plan, args=(email, task_id)).start()
+        with tasks_lock:
+            task_status[task_id] = {"status": "in-progress", "error_msg": None}
+        threading.Thread(
+            target=process_meal_plan, args=(email, task_id, task_status, tasks_lock)
+        ).start()
 
         return render_template("loading.html", task_id=task_id)
 
@@ -672,15 +677,17 @@ def edit_meal():
 
 @app.route("/error/<task_id>")
 def error(task_id):
-    error_msg = session.get(task_id, {"status": "not-found", "error_msg": None}).get(
-        "error_msg"
-    )
+    with tasks_lock:
+        error_msg = task_status.get(task_id).get("error_msg")
     return render_template("error.html", error_msg=error_msg)
 
 
 @app.route("/task-status/<task_id>")
 def task_status_check(task_id):
-    status_info = session.get(task_id, {"status": "not-found", "error_msg": None})
+    with tasks_lock:
+        status_info = task_status.get(
+            task_id, {"status": "not-found", "error_msg": None}
+        )
     print(status_info)
     return jsonify(status_info)
 

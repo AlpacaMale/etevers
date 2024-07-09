@@ -63,10 +63,11 @@ def get_primary_db():
         return get_db("rds")
 
 
-def process_meal_plan(email, task_id):
+def process_meal_plan(email, task_id, task_status, tasks_lock):
     db = get_primary_db()
     today = dt_date.today()
-
+    with tasks_lock:
+        task_status[task_id] = {"status": "in-progress", "error_msg": None}
     user_info = db.query(UserProfile).filter_by(users_email=email).first()
     preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
 
@@ -80,9 +81,11 @@ def process_meal_plan(email, task_id):
         meal_plan_items = json.loads(response3)
     except:
         response4 = create_meal_chain_4(response2)
-        with current_app.app_context():
-            session[task_id]["status"] = "error"
-            session[task_id]["error_msg"] = response4  # 에러 메시지를 딕셔너리에 저장
+        with tasks_lock:
+            task_status[task_id]["status"] = "error"
+            task_status[task_id][
+                "error_msg"
+            ] = response4  # 에러 메시지를 딕셔너리에 저장
         return
 
     print(meal_plan_items)
@@ -102,9 +105,9 @@ def process_meal_plan(email, task_id):
         )
         db.add(new_meal_plan_tracking)
         db.commit()
-
-        with current_app.app_context():
-            session[task_id] = {"status": "complete", "error_msg": None}
+        with tasks_lock:
+            task_status[task_id] = {"status": "complete", "error_msg": None}
+        return
 
 
 def login_required(f):
