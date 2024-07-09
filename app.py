@@ -34,7 +34,7 @@ from graph import print_graph
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-# Session(app)
+Session(app)
 logging.basicConfig(level=logging.DEBUG)
 task_status = {}
 tasks_lock = threading.Lock()
@@ -705,7 +705,7 @@ def task_status_check(task_id):
         status_info = task_status.get(
             task_id, {"status": "not-found", "error_msg": None}
         )
-    print(status_info)
+    logging.debug(f"Task status for task_id {task_id}: {status_info}")
     return jsonify(status_info)
 
 
