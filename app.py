@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, session, redirect, jsonify, s
 from flask_session import Session
 from datetime import date as dt_date, datetime
 from config import Config
+import threading
+import time as t_time
 from models import (
     db,
     time,
@@ -20,12 +22,22 @@ from sqlalchemy import asc, desc
 from flask_sqlalchemy import SQLAlchemy
 from graph import print_graph
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 Session(app)
 
-from function import login_required, get_primary_db, teardown_request, error
+thread_local = threading.local()
+task_status = {}
+
+from function import (
+    login_required,
+    get_primary_db,
+    teardown_request,
+    error,
+    process_meal_plan,
+)
 
 
 @app.teardown_request
@@ -336,9 +348,10 @@ def write_weight_record():
         if (
             not last_weight_record
             or last_weight_record.date <= date
-            and date == dt_date.today()
+            or date == dt_date.today()
         ):
             user_profile.weight = weight
+            print(weight)
 
         if weight_record:
             weight_record.weight = weight
@@ -386,60 +399,67 @@ def view_meal_preference():
 def write_meal_preference():
     if request.method == "POST":
         db = get_primary_db()
-        preference_data_data = request.form.to_dict()
-        print(preference_data_data)
+        preference_data = request.form.to_dict()
+        print(preference_data)
         email = session.get("email")
-        food_item = preference_data_data.get("food_item")
+        food_item = preference_data.get("food_item")
+        preference_data_id = preference_data.get("preference_data_id")
 
-        new_preference = MealPreference(
-            users_email=email,
-            food_item=food_item,
-        )
-        db.add(new_preference)
-        db.commit()
+        if food_item:
+            new_preference = MealPreference(
+                users_email=email,
+                food_item=food_item,
+            )
+            db.add(new_preference)
+            db.commit()
 
-        prev_page = session.pop("prev_page", None)
+            prev_page = session.pop("prev_page", None)
 
-        if not prev_page:
-            return redirect("/view-meal-preference")
+            if not prev_page:
+                return redirect("/view-meal-preference")
 
-        return redirect(prev_page)
+            return redirect(prev_page)
+        else:
+            db.query(MealPreference).filter_by(id=preference_data_id).delete()
+            db.commit()
+            return redirect("/write-meal-preference")
 
     else:
         date = dt_date.today()
+        email = session.get("email")
+        db = get_primary_db()
+        preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
+        user_profile = db.query(UserProfile).filter_by(users_email=email).first()
+
+        for preference_data in preference_datas:
+            print(
+                preference_data,
+            )
 
         print(date)
-        return render_template("write-meal-preference.html", date=date)
+        return render_template(
+            "write-meal-preference.html",
+            date=date,
+            preference_datas=preference_datas,
+            user_profile=user_profile,
+        )
 
 
 @app.route("/make-meal-plan", methods=["GET", "POST"])
 @login_required
 def make_meal_plan():
-    db = get_primary_db()
+    email = session.get("email")
     if request.method == "POST":
-        email = session.get("email")
-        today = dt_date.today()
+        task_id = str(t_time.time())  # 간단한 task ID 생성
+        task_status[task_id] = {"status": "in-progress", "error_msg": None}
 
-        meal_plan_items = create_meal_plan_items(dt_date.today())
-        for meal_plan_item in meal_plan_items:
-            new_meal_plan_item = MealPlanItem(
-                users_email=email,
-                starting_date=today,
-                date=meal_plan_item.get("date"),
-                meal_time=meal_plan_item.get("meal_time"),
-                food_item=meal_plan_item.get("food_item"),
-            )
-            db.add(new_meal_plan_item)
-            db.commit()
-            new_meal_plan_tracking = MealPlanTracking(
-                meal_plan_items_id=new_meal_plan_item.id, status="yet"
-            )
-            db.add(new_meal_plan_tracking)
-            db.commit()
+        # 백그라운드 작업 실행
+        threading.Thread(target=process_meal_plan, args=(email, task_id, app)).start()
 
-        return redirect("/main")
+        return render_template("loading.html", task_id=task_id)
 
     else:
+        db = get_primary_db()
         email = session.get("email")
         user_profile = db.query(UserProfile).filter_by(users_email=email).first()
         preference_foods = (
@@ -545,6 +565,7 @@ def edit_meal():
         completed_meal_id = meal_data.get("completed_meal_id")
         meal_time = meal_data.get("meal_time")
         food_item = meal_data.get("food_item")
+        session["tab"] = meal_data.get("tab")
         if meal_data.get("date"):
             date = meal_data.get("date")
             session["date"] = date
@@ -596,6 +617,7 @@ def edit_meal():
     else:
         email = session.get("email")
         date = datetime.strptime(session.get("date"), "%Y-%m-%d").date()
+        tab = session.pop("tab", "breakfast")
 
         meal_plan_items = (
             db.query(MealPlanItem).filter_by(users_email=email, date=date).all()
@@ -612,7 +634,7 @@ def edit_meal():
             )
 
         user_meal_data = {}
-        user_missed_meal_datas = []
+        user_missed_meal_datas = {}
         for meal_plan_item in meal_plan_items:
 
             meal_plan_track = (
@@ -623,13 +645,14 @@ def edit_meal():
             print(meal_plan_track)
 
             if meal_plan_track.status == "missed":
-                user_missed_meal_datas.append(
-                    [
-                        meal_plan_item.meal_time,
-                        meal_plan_item.food_item,
-                        meal_plan_item.id,
+                if user_missed_meal_datas.get(meal_plan_item.meal_time) is None:
+                    user_missed_meal_datas[meal_plan_item.meal_time] = [
+                        {meal_plan_item.food_item: meal_plan_item.id}
                     ]
-                )
+                else:
+                    user_missed_meal_datas[meal_plan_item.meal_time].append(
+                        {meal_plan_item.food_item: meal_plan_item.id}
+                    )
             else:
                 if user_meal_data.get(meal_plan_item.meal_time) is None:
                     user_meal_data[meal_plan_item.meal_time] = [
@@ -647,7 +670,23 @@ def edit_meal():
             date=date,
             user_missed_meal_datas=user_missed_meal_datas,
             time=time,
+            tab=tab,
         )
+
+
+@app.route("/error/<task_id>")
+def error(task_id):
+    error_msg = task_status.get(
+        task_id, {"status": "not-found", "error_msg": None}
+    ).get("error_msg")
+    return render_template("error.html", error_msg=error_msg)
+
+
+@app.route("/task-status/<task_id>")
+def task_status_check(task_id):
+    status_info = task_status.get(task_id, {"status": "not-found", "error_msg": None})
+    print(status_info)
+    return jsonify(status_info)
 
 
 @app.route("/health")

@@ -1,0 +1,50 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5"></div>
+</main>
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="shadow-sm bg-body-tertiary rounded clearfix" style="padding: 80px 100px">
+      <div class="carousel-item active">
+        <div class="col text-center rounded bg-body-secondary" style="padding: 180px">
+          <p class="text-body-dark text-center fw-bold" style="font-size: 18px">"AI가 당신의 건강 정보와 선호도를 바탕으로 최적의 식단을 만들고 있습니다. 💪"</p>
+          <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+  function checkStatus(taskId) {
+    fetch(`/task-status/${taskId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data); // 상태 확인을 위한 로그 출력
+        if (data.status === "complete") {
+          window.location.href = "/main"; // 작업이 완료되면 메인 페이지로 리디렉션
+        } else if (data.status === "error") {
+          window.location.href = `/error/${taskId}`;
+        } else {
+          setTimeout(() => checkStatus(taskId), 1000); // 작업이 진행 중이면 1초 후 다시 확인
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking task status:", error);
+        document.getElementById("status").innerText = "Error checking task status. Please try again.";
+      });
+  }
+
+  window.onload = function () {
+    const taskId = "{{ task_id }}";
+    console.log(`Checking status for task: ${taskId}`); // 추가된 디버그 로그
+    checkStatus(taskId);
+  };
+</script>
+{% endblock %}

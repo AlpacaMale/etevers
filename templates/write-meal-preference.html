@@ -1,16 +1,41 @@
 {% extends "layout.html" %} {% block body %}
-<main class="container content d-flex align-items-center justify-content-center">
-  <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
-    <p class="text-center fw-bold fs-4">Let us know your preference</p>
-    <form action="/write-meal-preference" method="post">
-      <div class="mb-3">
-        <label class="form-label" for="food_item">무엇을 먹는걸 선호하나요</label>
-        <input class="form-control" type="food_item" name="food_item" required id="food_item" placeholder="ex) 면요리 일주일에 3번이상, 가지를 싫어합니다." />
+<main class="container" style="width: 80%">
+  <div class="p-5">
+    <p class="fw-bold fs-1">선호하는 음식을 적어주세요</p>
+    <p class="fs-5">ex) 면요리 일주일에 3번 이상, 과자 좋아함.</p>
+  </div>
+</main>
+
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
+      {% if preference_datas is not none and preference_datas|length > 0 %}
+      <div class="row">
+        <div class="col">
+          <p class="fw-bold fs-4 text-center">{{ user_profile.users_email }} 님이 선호하는 음식</p>
+        </div>
       </div>
-      <div class="d-grid">
-        <button class="btn btn-dark text-white" type="submit">등록하기</button>
-      </div>
-    </form>
+
+      <form action="/write-meal-preference" method="post">
+        <div class="mb-3 p-4 shadow-sm rounded bg-body-secondary">
+          {% for preference_data in preference_datas %}
+          <p class="text-start fs-4">• {{ preference_data['food_item'] }} <button class="btn btn-danger mbtn" value="{{ preference_data['id'] }}" name="preference_data_id">delete</button></p>
+          {% endfor %}
+        </div>
+      </form>
+      {% endif %}
+
+      <form action="/write-meal-preference" method="post">
+        <p class="text-center fw-bold fs-4">선호하는 음식 등록하기</p>
+        <div class="mb-3">
+          <label class="form-label" for="food_item">무엇을 먹는걸 선호하나요</label>
+          <input class="form-control" type="food_item" name="food_item" required id="food_item" placeholder="ex) 면요리 일주일에 3번이상, 가지를 싫어합니다." />
+        </div>
+        <div class="d-grid">
+          <button class="btn btn-dark text-white" type="submit">등록하기</button>
+        </div>
+      </form>
+    </div>
   </div>
 </main>
 {% endblock %}

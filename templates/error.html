@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block body %}
+<main class="container" style="width: 80%">
+  <div class="p-5">
+    <p class="fw-bold fs-1">요청을 실행할 수 없습니다!</p>
+    <p class="fs-5">메세지를 확인해주세요</p>
+  </div>
+</main>
+<main class="container" style="width: 80%">
+  <div class="p-5 pt-0">
+    <div class="shadow-sm bg-body-tertiary rounded" style="padding: 80px 100px">
+      <div class="row mb-4">
+        <div class="col">
+          <p class="fw-bold fs-4">에러 메시지</p>
+        </div>
+      </div>
+      <div class="mb-3 p-4 shadow-sm rounded bg-body-secondary">
+        <p class="text-center fs-4">{{ error_msg }}</p>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

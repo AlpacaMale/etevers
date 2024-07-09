@@ -9,3 +9,4 @@ pymysql
 ping3
 cryptography
 uWSGI
+google.generativeai

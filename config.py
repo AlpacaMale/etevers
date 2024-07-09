@@ -3,7 +3,7 @@ import redis
 DB_PRIMARY_ROUTE = "172.16.0.201"
 DB_SECONDARY_ROUTE = "172.16.0.202"
 RDS_ROUTE = "rds.crqgcai442on.ap-northeast-2.rds.amazonaws.com"
-REDIS_ROUTE = "172.16.0.51"
+REDIS_ROUTE = "redis-session-nhbb1i.serverless.apn2.cache.amazonaws.com"
 
 
 class Config:

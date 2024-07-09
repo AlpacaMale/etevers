@@ -43,9 +43,9 @@
         </div>
       </nav>
 
-      <div class="tab-content" id="pills-tabContent">
+      <div class="tab-content mb-3 p-4 shadow-sm rounded bg-body-secondary" id="pills-tabContent">
         {% for meal_type in ['breakfast', 'lunch', 'dinner', 'snack'] if user_meal_data.get(meal_type) %}
-        <div class="p-3 tab-pane fade {% if loop.first %}show active{% endif %}" id="pills-{{ meal_type }}" role="tabpanel" aria-labelledby="pills-{{ meal_type }}-tab" tabindex="0">
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="pills-{{ meal_type }}" role="tabpanel" aria-labelledby="pills-{{ meal_type }}-tab" tabindex="0">
           {% for meal in user_meal_data[meal_type] %} {% for food_item, meal_id in meal.items() %}
           <p class="text-start fs-4">• {{ food_item }}</p>
           {% endfor %} {% endfor %}
