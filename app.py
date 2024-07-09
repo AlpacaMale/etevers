@@ -447,10 +447,11 @@ def make_meal_plan():
     email = session.get("email")
     if request.method == "POST":
         task_id = str(t_time.time())  # 간단한 task ID 생성
-        session[task_id] = {"status": "in-progress", "error_msg": None}
 
         # 백그라운드 작업 실행
-        threading.Thread(target=process_meal_plan, args=(email, task_id, app)).start()
+        with app.app_context():
+            session[task_id] = {"status": "in-progress", "error_msg": None}
+            threading.Thread(target=process_meal_plan, args=(email, task_id)).start()
 
         return render_template("loading.html", task_id=task_id)
 
