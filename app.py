@@ -34,7 +34,8 @@ from graph import print_graph
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-Session(app)
+# Session(app)
+logging.basicConfig(level=logging.DEBUG)
 task_status = {}
 tasks_lock = threading.Lock()
 
