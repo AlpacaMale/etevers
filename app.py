@@ -227,7 +227,7 @@ def login():
         password = login_data.get("password")
 
         if not db.query(User).filter_by(email=email, password=password).first():
-            return error(401)
+            return redirect("/login")
 
         session["email"] = email
 
