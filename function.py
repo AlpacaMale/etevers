@@ -67,51 +67,89 @@ def get_primary_db():
 def process_meal_plan(app, email, task_id, tasks, tasks_lock):
     with app.app_context():
         logging.debug(f"Starting process_meal_plan for task_id: {task_id}")
-        db = get_primary_db()
-        today = dt_date.today()
-        with tasks_lock:
-            tasks[task_id] = {"status": "in-progress", "error_msg": None}
-        user_info = db.query(UserProfile).filter_by(users_email=email).first()
-        preference_datas = db.query(MealPreference).filter_by(users_email=email).all()
-
-        response1 = create_meal_chain_1(user_info, preference_datas)
-        logging.debug(f"Response1: {response1}")
-        response2 = create_meal_chain_2(response1)
-        logging.debug(f"Response1: {response2}")
-        response3 = create_meal_chain_3(response2)
-        logging.debug(f"Response1: {response3}")
         try:
-            meal_plan_items = json.loads(response3)
-        except:
-            response4 = create_meal_chain_4(response2)
+            db = get_primary_db()
+            today = dt_date.today()
+            user_info = db.query(UserProfile).filter_by(users_email=email).first()
+            preference_datas = (
+                db.query(MealPreference).filter_by(users_email=email).all()
+            )
+
             with tasks_lock:
-                tasks[task_id]["status"] = "error"
-                tasks[task_id]["error_msg"] = response4  # 에러 메시지를 딕셔너리에 저장
-            logging.debug(
-                f"Error in process_meal_plan for task_id: {task_id}, response4: {response4}"
-            )
-            return
+                tasks[task_id] = {"status": "in-progress", "error_msg": None}
 
-        logging.debug(f"Meal Plan Items: {meal_plan_items}")
+            # response1 = create_meal_chain_1(user_info, preference_datas)
+            # logging.debug(f"Response1: {response1}")
+            # response2 = create_meal_chain_2(response1)
+            # logging.debug(f"Response2: {response2}")
+            # response3 = create_meal_chain_3(response2)
+            # logging.debug(f"Response3: {response3}")
+            response1 = create_meal_chain_1(user_info, preference_datas)
+            logging.debug(f"Response1: {response1}")
 
-        for meal_plan_item in meal_plan_items:
-            new_meal_plan_item = MealPlanItem(
-                users_email=email,
-                starting_date=today,
-                date=meal_plan_item.get("date"),
-                meal_time=meal_plan_item.get("meal_type"),
-                food_item=meal_plan_item.get("diet"),
+            response2 = []
+            try:
+                loaded_responses = json.loads(response1)
+                for loaded_response in loaded_responses:
+                    date = loaded_response.get("date")
+                    meal_type = loaded_response.get("meal_type")
+                    diet_list = loaded_response.get("diet").split(" / ")
+                    for diet in diet_list:
+                        meal_plan_item = {
+                            "date": date,
+                            "meal_type": meal_type,
+                            "diet": diet,
+                        }
+                        response2.append(meal_plan_item)
+
+            except Exception as e:
+                response4 = create_meal_chain_4(response1)
+            logging.debug(f"Response2: {response2}")
+
+            response3 = create_meal_chain_3(response2)
+            logging.debug(f"Response3: {response3}")
+
+            try:
+                meal_plan_items = json.loads(response3)
+            except Exception as e:
+                response4 = create_meal_chain_4(response2)
+                with tasks_lock:
+                    tasks[task_id]["status"] = "error"
+                    tasks[task_id][
+                        "error_msg"
+                    ] = response4  # 에러 메시지를 딕셔너리에 저장
+                logging.error(
+                    f"Error in process_meal_plan for task_id: {task_id}, response4: {response4}, exception: {e}"
+                )
+                return
+
+            logging.debug(f"Meal Plan Items: {meal_plan_items}")
+
+            for meal_plan_item in meal_plan_items:
+                new_meal_plan_item = MealPlanItem(
+                    users_email=email,
+                    starting_date=today,
+                    date=meal_plan_item.get("date"),
+                    meal_time=meal_plan_item.get("meal_type"),
+                    food_item=meal_plan_item.get("diet"),
+                )
+                db.add(new_meal_plan_item)
+                db.commit()
+                new_meal_plan_tracking = MealPlanTracking(
+                    meal_plan_items_id=new_meal_plan_item.id, status="yet"
+                )
+                db.add(new_meal_plan_tracking)
+                db.commit()
+
+            with tasks_lock:
+                tasks[task_id] = {"status": "complete", "error_msg": None}
+            logging.debug(f"Completed process_meal_plan for task_id: {task_id}")
+        except Exception as e:
+            with tasks_lock:
+                tasks[task_id] = {"status": "error", "error_msg": str(e)}
+            logging.error(
+                f"Unexpected error in process_meal_plan for task_id: {task_id}, exception: {e}"
             )
-            db.add(new_meal_plan_item)
-            db.commit()
-            new_meal_plan_tracking = MealPlanTracking(
-                meal_plan_items_id=new_meal_plan_item.id, status="yet"
-            )
-            db.add(new_meal_plan_tracking)
-            db.commit()
-        with tasks_lock:
-            tasks[task_id] = {"status": "complete", "error_msg": None}
-        logging.debug(f"Completed process_meal_plan for task_id: {task_id}")
 
 
 def login_required(f):

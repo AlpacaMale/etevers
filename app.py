@@ -460,17 +460,22 @@ def make_meal_plan():
     if request.method == "POST":
         task_id = str(t_time.time())  # 간단한 task ID 생성
 
-        # 백그라운드 작업 실행
+        # task_status 초기화는 락을 사용
         with tasks_lock:
             task_status[task_id] = {"status": "in-progress", "error_msg": None}
 
         @copy_current_request_context
-        def thread_function(email, task_id, tasks, tasks_lock):
-            process_meal_plan(app, email, task_id, tasks, tasks_lock)
+        def thread_function(app, email, task_id, tasks, tasks_lock):
+            try:
+                process_meal_plan(app, email, task_id, tasks, tasks_lock)
+            except Exception as e:
+                logging.error(
+                    f"Error in thread_function for task_id: {task_id}", exc_info=True
+                )
 
         logging.debug(f"Starting thread for task_id: {task_id}")
         threading.Thread(
-            target=thread_function, args=(email, task_id, task_status, tasks_lock)
+            target=thread_function, args=(app, email, task_id, task_status, tasks_lock)
         ).start()
         logging.debug(f"Thread started for task_id: {task_id}")
 
