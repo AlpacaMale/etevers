@@ -103,6 +103,7 @@ def process_meal_plan(app, email, task_id, tasks, tasks_lock):
                         response2.append(meal_plan_item)
 
             except Exception as e:
+                response4 = create_meal_chain_4(response1)
                 with tasks_lock:
                     tasks[task_id] = {"status": "error", "error_msg": response4}
                 return
