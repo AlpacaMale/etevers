@@ -43,7 +43,6 @@ from function import (
     login_required,
     get_primary_db,
     teardown_request,
-    error,
     process_meal_plan,
 )
 
@@ -227,7 +226,9 @@ def login():
         password = login_data.get("password")
 
         if not db.query(User).filter_by(email=email, password=password).first():
-            return redirect("/login")
+            return render_template(
+                "error.html", error_msg="이메일이나 비밀번호가 일치하지 않습니다."
+            )
 
         session["email"] = email
 
@@ -255,13 +256,15 @@ def register():
         print(register_data)
         email = register_data.get("email")
         if db.query(User).filter_by(email=email).first():
-            return error(400)
+            return render_template("error.html", error_msg="이미 있는 이메일입니다.")
 
         password = register_data.get("password")
         password_confirm = register_data.get("password-confirm")
 
         if password != password_confirm:
-            return error(400)
+            return render_template(
+                "error.html", error_msg="비밀번호가 일치하지 않습니다."
+            )
 
         new_user = User(email=email, password=password)
         db.add(new_user)
