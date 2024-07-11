@@ -21,10 +21,6 @@ from datetime import date as dt_date
 import json
 
 
-def error(code):
-    return jsonify({code: get_status_code(code)})
-
-
 def get_status_code(code):
     status = {
         400: "Bad Request",
@@ -56,12 +52,16 @@ def teardown_request(exception):
 
 
 def get_primary_db():
-    if ping(DB_PRIMARY_ROUTE, timeout=0.1):
-        return get_db("db_primary")
-    elif ping(DB_SECONDARY_ROUTE, timeout=0.1):
-        return get_db("db_secondary")
-    else:
-        return get_db("rds")
+    return get_db("db_primary")
+
+
+# def get_primary_db():
+#     if ping(DB_PRIMARY_ROUTE, timeout=0.1):
+#         return get_db("db_primary")
+#     elif ping(DB_SECONDARY_ROUTE, timeout=0.1):
+#         return get_db("db_secondary")
+#     else:
+#         return get_db("rds")
 
 
 def process_meal_plan(app, email, task_id, tasks, tasks_lock):
@@ -78,12 +78,6 @@ def process_meal_plan(app, email, task_id, tasks, tasks_lock):
             with tasks_lock:
                 tasks[task_id] = {"status": "in-progress", "error_msg": None}
 
-            # response1 = create_meal_chain_1(user_info, preference_datas)
-            # logging.debug(f"Response1: {response1}")
-            # response2 = create_meal_chain_2(response1)
-            # logging.debug(f"Response2: {response2}")
-            # response3 = create_meal_chain_3(response2)
-            # logging.debug(f"Response3: {response3}")
             response1 = create_meal_chain_1(user_info, preference_datas)
             logging.debug(f"Response1: {response1}")
 
@@ -147,6 +141,7 @@ def process_meal_plan(app, email, task_id, tasks, tasks_lock):
             with tasks_lock:
                 tasks[task_id] = {"status": "complete", "error_msg": None}
             logging.debug(f"Completed process_meal_plan for task_id: {task_id}")
+
         except Exception as e:
             with tasks_lock:
                 tasks[task_id] = {"status": "error", "error_msg": str(e)}
