@@ -18,7 +18,7 @@
 
     - name: Gather vmware host facts
       community.vmware.vmware_host_facts:
-        hostname: "{{ esxi_server }}"
+        hostname: "{{ esxi_hostname }}"
         username: "{{ esxi_username }}"
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         validate_certs: false
