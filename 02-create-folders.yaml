@@ -1,0 +1,26 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: Create VM folders
+      community.vmware.vmware_folder:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        validate_certs: "false"
+        folder: "{{ item.folder_name }}"
+        state: present
+      loop:
+        - { folder_name: "LoadBalancer" }
+        - { folder_name: "Master Node" }
+        - { folder_name: "Worker Node 01" }
+        - { folder_name: "Worker Node 02" }
+        - { folder_name: "Worker Node 03" }
+        - { folder_name: "Worker Node 04" }
+        - { folder_name: "Monitoring" }
+        - { folder_name: "CI/CD" }
+        - { folder_name: "DB for Dev" }
+        - { folder_name: "Redis for Dev" }
+      delegate_to: localhost
