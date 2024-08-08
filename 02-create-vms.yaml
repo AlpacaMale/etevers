@@ -163,7 +163,7 @@
             iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
           }
         - {
-            portgroup:
+            portgroup: "DB Dev",
             folder_name: "Redis for Dev",
             vmname: "Redis for Dev",
             guest_id: vmkernel8Guest,
