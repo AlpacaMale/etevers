@@ -1,0 +1,55 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_vswitch_module.html#ansible-collections-community-vmware-vmware-vswitch-module
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_portgroup_module.html
+
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: Adding K8S for Dev Portgroup
+      community.vmware.vmware_portgroup:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        validate_certs: no
+        switch: "{{ switch_name }}"
+        portgroup: "{{ Dev }}"
+        vlan_id: 40
+      delegate_to: localhost
+
+    - name: Adding DB for Dev Portgroup
+      community.vmware.vmware_portgroup:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        validate_certs: no
+        switch: "{{ switch_name }}"
+        portgroup: "{{ DB Dev }}"
+        vlan_id: 50
+      delegate_to: localhost
+
+    - name: Adding CI/CD for Dev Portgroup
+      community.vmware.vmware_portgroup:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        validate_certs: no
+        switch: "{{ switch_name }}"
+        portgroup: "{{ CI/CD Dev }}"
+        vlan_id: 60
+      delegate_to: localhost
+
+    - name: Adding Monitoring Portgroup
+      community.vmware.vmware_portgroup:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        validate_certs: no
+        switch: "{{ switch_name }}"
+        portgroup: "{{ Monitoring }}"
+        vlan_id: 70
+      delegate_to: localhost

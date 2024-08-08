@@ -1,0 +1,8 @@
+ansible_python_interpreter: /bin/python3
+
+switch_name: "vSwitch0"
+
+vcenter_hostname: "localhost.localdomain"
+vcenter_username: "root"
+vcenter_password: "VMware1!"
+# iso_folder: "[{{ datastore_name }}]\\ISOs\\"
