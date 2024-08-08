@@ -1,16 +1,20 @@
 ---
-- name: Get list of datacenters
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - name: Get datacenters
-      community.vmware.vmware_datacenter_info:
-        hostname: "{{ vcenter_hostname }}"
-        username: "{{ vcenter_username }}"
-        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
-        validate_certs: false
-      register: datacenters
+- hosts: localhost
+  vars_files: ./vars.yaml
 
-    - name: Show datacenter info
-      debug:
-        var: datacenters
+  tasks:
+    name: Get list of datacenters
+      hosts: localhost
+      gather_facts: no
+      tasks:
+        - name: Get datacenters
+          community.vmware.vmware_datacenter_info:
+            hostname: "{{ vcenter_hostname }}"
+            username: "{{ vcenter_username }}"
+            password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+            validate_certs: false
+          register: datacenters
+
+        - name: Show datacenter info
+          debug:
+            var: datacenters
