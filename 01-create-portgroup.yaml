@@ -15,7 +15,7 @@
         validate_certs: no
         switch: "{{ switch_name }}"
         portgroup: "{{ Dev }}"
-        vlan_id: 40
+        vlan_id: 30
       delegate_to: localhost
 
     - name: Adding DB for Dev Portgroup
@@ -27,7 +27,7 @@
         validate_certs: no
         switch: "{{ switch_name }}"
         portgroup: "{{ DB Dev }}"
-        vlan_id: 50
+        vlan_id: 40
       delegate_to: localhost
 
     - name: Adding CI/CD for Dev Portgroup
@@ -39,7 +39,7 @@
         validate_certs: no
         switch: "{{ switch_name }}"
         portgroup: "{{ CI/CD Dev }}"
-        vlan_id: 60
+        vlan_id: 50
       delegate_to: localhost
 
     - name: Adding Monitoring Portgroup
@@ -51,5 +51,5 @@
         validate_certs: no
         switch: "{{ switch_name }}"
         portgroup: "{{ Monitoring }}"
-        vlan_id: 70
+        vlan_id: 60
       delegate_to: localhost
