@@ -1,9 +1,10 @@
 ---
-- hosts: localhost
+- name: Gather vCenter and ESXi information
   vars_files: ./vars.yaml
-
+  hosts: localhost
+  gather_facts: no
   tasks:
-    - name: Get datacenters
+    - name: Get datacenter info
       community.vmware.vmware_datacenter_info:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
@@ -11,6 +12,18 @@
         validate_certs: false
       register: datacenter_info
 
-    - name: Print vCenter server information
+    - name: Print datacenter info
       debug:
         var: datacenter_info
+
+    - name: Get ESXi host info
+      community.vmware.vmware_host_info:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ lookup('env', 'ESXI_PASSWORD') }}"
+        validate_certs: false
+      register: esxi_info
+
+    - name: Print ESXi host info
+      debug:
+        var: esxi_info
