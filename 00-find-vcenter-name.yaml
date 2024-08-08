@@ -9,8 +9,8 @@
         username: "{{ vcenter_username }}"
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         validate_certs: false
-      register: datacenters
+      register: datacenter_info
 
-    - name: Show datacenter info
+    - name: Print vCenter server information
       debug:
-        var: datacenters
+        var: datacenter_info
