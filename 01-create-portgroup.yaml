@@ -10,7 +10,7 @@
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         esxi_hostname: "{{ vcenter_hostname }}"
         validate_certs: no
         switch: "{{ switch_name }}"
@@ -22,7 +22,7 @@
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         esxi_hostname: "{{ vcenter_hostname }}"
         validate_certs: no
         switch: "{{ switch_name }}"
@@ -34,7 +34,7 @@
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         esxi_hostname: "{{ vcenter_hostname }}"
         validate_certs: no
         switch: "{{ switch_name }}"
@@ -46,7 +46,7 @@
       community.vmware.vmware_portgroup:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         esxi_hostname: "{{ vcenter_hostname }}"
         validate_certs: no
         switch: "{{ switch_name }}"
