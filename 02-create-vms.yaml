@@ -36,21 +36,21 @@
             state: present
             type: iso
             iso_path: "{{ item.iso_filename }}"
-        user_data:
-          enabled: true
-          content: |
-            #cloud-config
-            users:
-              - name: rocky
-                ssh_authorized_keys:
-                  - "{{ lookup('env', 'SSH_PUBLIC_KEY') }}"
-                sudo: ['ALL=(ALL) NOPASSWD:ALL']
-                shell: /bin/bash
-            packages:
-              - vim
-            runcmd:
-              - echo "Hello, world!"
-              - systemctl enable --now sshd
+        # user_data:
+        #   enabled: true
+        #   content: |
+        #     #cloud-config
+        #     users:
+        #       - name: rocky
+        #         ssh_authorized_keys:
+        #           - "{{ lookup('env', 'SSH_PUBLIC_KEY') }}"
+        #         sudo: ['ALL=(ALL) NOPASSWD:ALL']
+        #         shell: /bin/bash
+        #     packages:
+        #       - vim
+        #     runcmd:
+        #       - echo "Hello, world!"
+        #       - systemctl enable --now sshd
       loop:
         - {
             portgroup: "K8S Dev",
