@@ -4,5 +4,5 @@ switch_name: "vSwitch0"
 
 vcenter_hostname: "esxi"
 vcenter_username: "root"
-vcenter_password: "VMware1!"
-# iso_folder: "[{{ datastore_name }}]\\ISOs\\"
+datastore_name: "Local-ESXi-02"
+iso_folder: "[{{ datastore_name }}]\\ISOs\\"

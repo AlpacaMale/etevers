@@ -1,0 +1,177 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: Create Lab VM - ESXi
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        validate_certs: "false"
+        datastore: "{{ datastore_name }}"
+        folder: "{{ item.folder_name }}"
+        name: "{{ item.vmname }}"
+        state: poweredoff
+        guest_id: "{{ item.guest_id }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        hardware:
+          version: 20
+          num_cpus: "{{ item.cpus }}"
+          nested_virt: "{{ item.nested }}"
+          memory_mb: "{{ item.memory }}"
+          scsi: paravirtual
+        disk:
+          - size_gb: "{{ item.disk_gb }}"
+            type: thin
+            datastore: "{{ datastore_name }}"
+        networks:
+          - name: "{{ item.portgroup }}"
+            device_type: vmxnet3
+
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            state: present
+            type: iso
+            iso_path: "{{ item.iso_filename }}"
+        user_data:
+          enabled: true
+          content: |
+            #cloud-config
+            users:
+              - name: rocky
+                ssh_authorized_keys:
+                  - "{{ lookup('env', 'SSH_PUBLIC_KEY') }}"
+                sudo: ['ALL=(ALL) NOPASSWD:ALL']
+                shell: /bin/bash
+            packages:
+              - vim
+            runcmd:
+              - echo "Hello, world!"
+              - systemctl enable --now sshd
+      loop:
+        - {
+            portgroup: "K8S Dev",
+            folder_name: "LoadBalancer",
+            vmname: "LoadBalancer",
+            guest_id: vmkernel8Guest,
+            cpus: 1,
+            nested: false,
+            memory: 1024,
+            disk_gb: 20,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "K8S Dev",
+            folder_name: "Master Node",
+            vmname: "Master-Node",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: true,
+            memory: 4096,
+            disk_gb: 40,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "K8S Dev",
+            folder_name: "Worker Node 01",
+            vmname: "Worker-Node-01",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: true,
+            memory: 4096,
+            disk_gb: 40,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "K8S Dev",
+            folder_name: "Worker Node 02",
+            vmname: "Worker-Node-02",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: true,
+            memory: 4096,
+            disk_gb: 40,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "K8S Dev",
+            folder_name: "Worker Node 03",
+            vmname: "Worker-Node-03",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: true,
+            memory: 4096,
+            disk_gb: 40,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "K8S Dev",
+            folder_name: "Worker Node 04",
+            vmname: "Worker-Node-04",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: true,
+            memory: 4096,
+            disk_gb: 40,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "Monitoring",
+            folder_name: "Monitoring",
+            vmname: "Monitoring",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: false,
+            memory: 4096,
+            disk_gb: 50,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "CI/CD Dev",
+            folder_name: "CI/CD",
+            vmname: "Jenkins",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: false,
+            memory: 4096,
+            disk_gb: 50,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "CI/CD Dev",
+            folder_name: "CI/CD",
+            vmname: "Argo",
+            guest_id: vmkernel8Guest,
+            cpus: 1,
+            nested: false,
+            memory: 2048,
+            disk_gb: 20,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup: "DB Dev",
+            folder_name: "DB for Dev",
+            vmname: "DB-Dev",
+            guest_id: vmkernel8Guest,
+            cpus: 2,
+            nested: false,
+            memory: 4096,
+            disk_gb: 100,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+        - {
+            portgroup:
+            folder_name: "Redis for Dev",
+            vmname: "Redis for Dev",
+            guest_id: vmkernel8Guest,
+            cpus: 1,
+            nested: false,
+            memory: 2048,
+            disk_gb: 20,
+            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
+          }
+      delegate_to: localhost
+      register: deploy_vm
