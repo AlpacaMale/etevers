@@ -11,4 +11,5 @@ esxi_username: "root"
 
 datastore_name: "Local-ESXi-02"
 vcenter_datacenter: "ha-datacenter"
+
 iso_folder: "[{{ datastore_name }}]\\ISOs\\"
