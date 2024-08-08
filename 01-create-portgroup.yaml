@@ -14,7 +14,7 @@
         esxi_hostname: "{{ vcenter_hostname }}"
         validate_certs: no
         switch: "{{ switch_name }}"
-        portgroup: "Dev"
+        portgroup: "K8S Dev"
         vlan_id: 30
       delegate_to: localhost
 
