@@ -11,7 +11,7 @@
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         validate_certs: "false"
         datastore: "{{ datastore_name }}"
-        folder: "{{ [{{ datastore_name }}]\\item.folder_name }}"
+        folder: "{{ datastore_name }}/{{ item.folder_name }}"
         name: "{{ item.vmname }}"
         state: poweredoff
         guest_id: "{{ item.guest_id }}"
