@@ -5,7 +5,7 @@
 
   tasks:
     - name: Create VM folders
-      community.vmware.vmware_folder:
+      community.vmware.vcenter_folder:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
