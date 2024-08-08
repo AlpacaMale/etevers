@@ -3,11 +3,7 @@
   vars_files: ./vars.yaml
 
   tasks:
-    name: Get list of datacenters
-      hosts: localhost
-      gather_facts: no
-      tasks:
-        - name: Get datacenters
+    - name: Get datacenters
           community.vmware.vmware_datacenter_info:
             hostname: "{{ vcenter_hostname }}"
             username: "{{ vcenter_username }}"
