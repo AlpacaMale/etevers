@@ -4,7 +4,7 @@
   vars_files: ./vars.yaml
 
   tasks:
-    - name: Create Lab VM - ESXi
+    - name: Create VMS
       community.vmware.vmware_guest:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
@@ -15,7 +15,7 @@
         name: "{{ item.vmname }}"
         state: poweredoff
         guest_id: "{{ item.guest_id }}"
-        esxi_hostname: "{{ esxi_hostname }}"
+        esxi_hostname: "{{ vcenter_hostname }}"
         hardware:
           version: 20
           num_cpus: "{{ item.cpus }}"
