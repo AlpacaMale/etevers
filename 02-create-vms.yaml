@@ -8,7 +8,7 @@
       community.vmware.vcenter_folder:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
-        password: "{{ vcenter_password }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         validate_certs: "false"
         datacenter: "{{ vcenter_datacenter }}"
         folder_name: "{{ datastore_name }}/{{ item.folder_name }}"
