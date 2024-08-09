@@ -13,7 +13,7 @@
         networks: "{{ item.networks }}"
         power_on: false
         ovf: /OVF/Linux Templates.ovf
-        disk_provision: thin
+        disk_provisioning: thin
       loop:
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-01" }
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-02" }
