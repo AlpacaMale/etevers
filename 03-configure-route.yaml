@@ -1,0 +1,55 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_vm_shell_module.html#ansible-collections-community-vmware-vmware-vm-shell-module
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: VyOS Router Configuration
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        validate_certs: "false"
+        # datacenter: '{{ datacenter_name }}'
+        folder: "/"
+        vm_id: "Router"
+        vm_id_type: vm_name
+        vm_username: "vyos"
+        vm_password: "vyos"
+        vm_shell: /bin/vbash
+        vm_shell_cwd: "/tmp"
+        vm_shell_args: |-
+          -c "source /opt/vyatta/etc/functions/script-template
+          configure
+          set interfaces ethernet eth0 address dhcp
+          set interfaces ethernet eth0 ipv6 address no-default-link-local
+          set interfaces ethernet eth1 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 vif 20 description 'Management'
+          set interfaces ethernet eth1 vif 20 address 172.16.0.0/24
+          set interfaces ethernet eth1 vif 20 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 vif 30 description 'K8S'
+          set interfaces ethernet eth1 vif 30 address 172.16.1.0/24
+          set interfaces ethernet eth1 vif 30 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 vif 40 description 'DB'
+          set interfaces ethernet eth1 vif 40 address 172.16.2.0/24
+          set interfaces ethernet eth1 vif 40 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 vif 50 description 'CI/CD'
+          set interfaces ethernet eth1 vif 50 address 172.16.3.0/24
+          set interfaces ethernet eth1 vif 50 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 vif 60 description 'Monitoring'
+          set interfaces ethernet eth1 vif 60 address 172.16.4.0/24
+          set interfaces ethernet eth1 vif 60 ipv6 address no-default-link-local
+
+          set service ssh port 22
+
+          commit
+          save"
+        wait_for_process: True
+        timeout: 180
+      delegate_to: localhost
+      register: shell_command_with_wait_timeout

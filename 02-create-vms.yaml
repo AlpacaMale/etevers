@@ -13,7 +13,7 @@
         folder: "/"
         name: "{{ item.vmname }}"
         state: poweredoff
-        guest_id: "{{ item.guest_id }}"
+        guest_id: "vmkernel8Guest,"
         hardware:
           version: 20
           num_cpus: "{{ item.cpus }}"
@@ -27,134 +27,22 @@
         networks:
           - name: "{{ item.portgroup }}"
             device_type: vmxnet3
-
         cdrom:
           - controller_number: 0
             unit_number: 0
             state: present
             type: iso
-            iso_path: "{{ item.iso_filename }}"
+            iso_path: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}"
       loop:
-        - {
-            portgroup: "K8S Dev",
-            folder_name: "LoadBalancer",
-            vmname: "LoadBalancer",
-            guest_id: vmkernel8Guest,
-            cpus: 1,
-            nested: false,
-            memory: 1024,
-            disk_gb: 20,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "K8S Dev",
-            folder_name: "Master Node",
-            vmname: "Master-Node",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: true,
-            memory: 4096,
-            disk_gb: 40,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "K8S Dev",
-            folder_name: "Worker Node 01",
-            vmname: "Worker-Node-01",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: true,
-            memory: 4096,
-            disk_gb: 40,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "K8S Dev",
-            folder_name: "Worker Node 02",
-            vmname: "Worker-Node-02",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: true,
-            memory: 4096,
-            disk_gb: 40,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "K8S Dev",
-            folder_name: "Worker Node 03",
-            vmname: "Worker-Node-03",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: true,
-            memory: 4096,
-            disk_gb: 40,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "K8S Dev",
-            folder_name: "Worker Node 04",
-            vmname: "Worker-Node-04",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: true,
-            memory: 4096,
-            disk_gb: 40,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "Monitoring",
-            folder_name: "Monitoring",
-            vmname: "Monitoring",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: false,
-            memory: 4096,
-            disk_gb: 50,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "CI/CD Dev",
-            folder_name: "CI/CD",
-            vmname: "Jenkins",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: false,
-            memory: 4096,
-            disk_gb: 50,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "CI/CD Dev",
-            folder_name: "CI/CD",
-            vmname: "Argo",
-            guest_id: vmkernel8Guest,
-            cpus: 1,
-            nested: false,
-            memory: 2048,
-            disk_gb: 20,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "DB Dev",
-            folder_name: "DB for Dev",
-            vmname: "DB-Dev",
-            guest_id: vmkernel8Guest,
-            cpus: 2,
-            nested: false,
-            memory: 4096,
-            disk_gb: 100,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
-        - {
-            portgroup: "DB Dev",
-            folder_name: "Redis for Dev",
-            vmname: "Redis for Dev",
-            guest_id: vmkernel8Guest,
-            cpus: 1,
-            nested: false,
-            memory: 2048,
-            disk_gb: 20,
-            iso_filename: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}",
-          }
+        - { portgroup: "K8S Dev", folder_name: "Master Node", vmname: "Master-Node", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
+        - { portgroup: "K8S Dev", folder_name: "Worker Node 01", vmname: "Worker-Node-01", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
+        - { portgroup: "K8S Dev", folder_name: "Worker Node 02", vmname: "Worker-Node-02", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
+        - { portgroup: "K8S Dev", folder_name: "Worker Node 03", vmname: "Worker-Node-03", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
+        - { portgroup: "K8S Dev", folder_name: "Worker Node 04", vmname: "Worker-Node-04", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
+        - { portgroup: "Monitoring", folder_name: "Monitoring", vmname: "Monitoring", cpus: 2, nested: false, memory: 4096, disk_gb: 50 }
+        - { portgroup: "CI/CD Dev", folder_name: "CI/CD", vmname: "Jenkins", cpus: 2, nested: false, memory: 4096, disk_gb: 50 }
+        - { portgroup: "CI/CD Dev", folder_name: "CI/CD", vmname: "Argo", cpus: 1, nested: false, memory: 2048, disk_gb: 20 }
+        - { portgroup: "DB Dev", folder_name: "DB for Dev", vmname: "DB-Dev", cpus: 2, nested: false, memory: 4096, disk_gb: 100 }
+        - { portgroup: "DB Dev", folder_name: "Redis for Dev", vmname: "Redis for Dev", cpus: 1, nested: false, memory: 2048, disk_gb: 20 }
       delegate_to: localhost
       register: deploy_vm
