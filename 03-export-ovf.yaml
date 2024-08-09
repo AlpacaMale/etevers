@@ -10,5 +10,5 @@
         name: "LinuxTemplates"
         validate_certs: false
         export_with_images: true
-        export_dir: "{{datastore_path}}/OVF/"
+        export_dir: "[{{ datastore_name }}] OVF/Linux Templates.ovf"
       delegate_to: localhost
