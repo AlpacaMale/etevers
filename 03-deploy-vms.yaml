@@ -11,7 +11,6 @@
         datastore: "{{ datastore_name }}"
         name: "{{ item.vmname }}"
         networks: "{{ item.networks }}"
-        folder: "{{ item.vmname }}"
         power_on: false
         ovf: "[661ce08d-87480024-537c-d89d67eea260] OVF/LinuxTemplates.ovf"
       loop:
