@@ -4,8 +4,6 @@ switch_name: "vSwitch0"
 
 vcenter_hostname: "esxi"
 vcenter_username: "root"
-
-# esxi_hostname: "esxi-05.vclass.reca5"
 esxi_hostname: "esxi"
 esxi_username: "root"
 
