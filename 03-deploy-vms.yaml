@@ -1,0 +1,28 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_deploy_ovf_module.html
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - community.vmware.vmware_deploy_ovf:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        datastore: "{{ datastore_name }}"
+        name: "{{ item.vmname }}"
+        networks:
+          - name: "{{ item.portgroup }}"
+            device_type: vmxnet3
+        power_on: false
+        ovf: /absolute/path/to/template/mytemplate.ova
+      loop:
+        - { portgroup: "K8S Dev", vmname: "Master-Node" }
+        - { portgroup: "K8S Dev", vmname: "Worker-Node-01" }
+        - { portgroup: "K8S Dev", vmname: "Worker-Node-02" }
+        - { portgroup: "K8S Dev", vmname: "Worker-Node-03" }
+        - { portgroup: "K8S Dev", vmname: "Worker-Node-04" }
+        - { portgroup: "Monitoring", vmname: "Monitoring" }
+        - { portgroup: "CI/CD Dev", vmname: "Jenkins" }
+        - { portgroup: "CI/CD Dev", vmname: "Argo" }
+        - { portgroup: "DB Dev", vmname: "DB-Dev" }
+        - { portgroup: "DB Dev", vmname: "Redis for Dev" }
+      delegate_to: localhost

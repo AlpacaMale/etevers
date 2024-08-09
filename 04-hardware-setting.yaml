@@ -24,15 +24,6 @@
           - size_gb: "{{ item.disk_gb }}"
             type: thin
             datastore: "{{ datastore_name }}"
-        networks:
-          - name: "{{ item.portgroup }}"
-            device_type: vmxnet3
-        cdrom:
-          - controller_number: 0
-            unit_number: 0
-            state: present
-            type: iso
-            iso_path: "{{ iso_folder + 'Rocky-9.0-20220728.0-ppc64le-minimal.iso' }}"
       loop:
         - { portgroup: "K8S Dev", folder_name: "Master Node", vmname: "Master-Node", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
         - { portgroup: "K8S Dev", folder_name: "Worker Node 01", vmname: "Worker-Node-01", cpus: 2, nested: true, memory: 4096, disk_gb: 40 }
