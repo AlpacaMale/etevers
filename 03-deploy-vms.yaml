@@ -12,7 +12,7 @@
         name: "{{ item.vmname }}"
         networks: "{{ item.networks }}"
         power_on: false
-        ovf: "[{{ datastore_name }}]/OVF/Linux Templates.ovf"
+        ovf: "[{{ datastore_name }}]\\OVF\\Linux Templates.ovf"
         disk_provisioning: thin
       loop:
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-01" }
