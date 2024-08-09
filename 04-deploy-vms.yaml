@@ -7,12 +7,15 @@
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        esxi_hostname: "{{ vcenter_hostname }}"
         validate_certs: false
         datastore: "{{ datastore_name }}"
         name: "{{ item.vmname }}"
         networks: "{{ item.networks }}"
+        folder: "/"
         power_on: false
-        ovf: "[661ce08d-87480024-537c-d89d67eea260] OVF/LinuxTemplates.ovf"
+        ovf: "[{{ datastore_name }}] OVF/Linux Templates.ovf"
+
       loop:
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-01" }
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-02" }
