@@ -10,7 +10,6 @@
         username: "{{ vcenter_username }}"
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
         validate_certs: "false"
-        # datacenter: '{{ datacenter_name }}'
         folder: "/"
         vm_id: "Router"
         vm_id_type: vm_name
@@ -21,29 +20,36 @@
         vm_shell_args: |-
           -c "source /opt/vyatta/etc/functions/script-template
           configure
+          set interfaces ethernet eth0 description Outside
           set interfaces ethernet eth0 address dhcp
           set interfaces ethernet eth0 ipv6 address no-default-link-local
           set interfaces ethernet eth1 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 20 description 'Management'
-          set interfaces ethernet eth1 vif 20 address 172.16.0.1/24
+          set interfaces ethernet eth1 vif 4095 description 'Trunk'
+          set interfaces ethernet eth1 vif 4095 address 172.16.0.1/24
+          set interfaces ethernet eth1 vif 4095 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 vif 20 description 'K8S'
+          set interfaces ethernet eth1 vif 20 address 172.16.1.1/24
           set interfaces ethernet eth1 vif 20 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 30 description 'K8S'
-          set interfaces ethernet eth1 vif 30 address 172.16.1.1/24
+          set interfaces ethernet eth1 vif 30 description 'DB'
+          set interfaces ethernet eth1 vif 30 address 172.16.2.1/24
           set interfaces ethernet eth1 vif 30 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 40 description 'DB'
-          set interfaces ethernet eth1 vif 40 address 172.16.2.1/24
+          set interfaces ethernet eth1 vif 40 description 'CI/CD'
+          set interfaces ethernet eth1 vif 40 address 172.16.3.1/24
           set interfaces ethernet eth1 vif 40 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 50 description 'CI/CD'
-          set interfaces ethernet eth1 vif 50 address 172.16.3.1/24
+          set interfaces ethernet eth1 vif 50 description 'Monitoring'
+          set interfaces ethernet eth1 vif 50 address 172.16.4.1/24
           set interfaces ethernet eth1 vif 50 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 60 description 'Monitoring'
-          set interfaces ethernet eth1 vif 60 address 172.16.4.1/24
-          set interfaces ethernet eth1 vif 60 ipv6 address no-default-link-local
+          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 option default-router 172.16.0.1
+          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 option name-server 8.8.8.8
+          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 range 0 start 172.16.0.2
+          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 range 0 stop 172.16.0.100
+          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 subnet-id 1
 
           set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 option default-router 172.16.1.1
           set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 option name-server 8.8.8.8
@@ -68,6 +74,12 @@
           set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 range 0 start 172.16.4.2
           set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 range 0 stop 172.16.4.100
           set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 subnet-id 5
+
+          set protocols static route 0.0.0.0/0 next-hop 192.168.7.1
+
+          set nat source rule 10 outbound-interface name 'eth0'
+          set nat source rule 10 source address 172.16.0.0/16
+          set nat source rule 10 translation address masquerade
 
           set service ssh port 22
 
