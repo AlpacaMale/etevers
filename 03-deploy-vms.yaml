@@ -7,22 +7,22 @@
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        validate_certs: false
         datastore: "{{ datastore_name }}"
         name: "{{ item.vmname }}"
-        networks:
-          - name: "{{ item.portgroup }}"
-            device_type: vmxnet3
+        networks: "{{ item.networks }}"
         power_on: false
-        ovf: /absolute/path/to/template/mytemplate.ova
+        ovf: /OVF/Linux Templates.ovf
+        disk_provision: thin
       loop:
-        - { portgroup: "K8S Dev", vmname: "Master-Node" }
-        - { portgroup: "K8S Dev", vmname: "Worker-Node-01" }
-        - { portgroup: "K8S Dev", vmname: "Worker-Node-02" }
-        - { portgroup: "K8S Dev", vmname: "Worker-Node-03" }
-        - { portgroup: "K8S Dev", vmname: "Worker-Node-04" }
-        - { portgroup: "Monitoring", vmname: "Monitoring" }
-        - { portgroup: "CI/CD Dev", vmname: "Jenkins" }
-        - { portgroup: "CI/CD Dev", vmname: "Argo" }
-        - { portgroup: "DB Dev", vmname: "DB-Dev" }
-        - { portgroup: "DB Dev", vmname: "Redis for Dev" }
+        - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-01" }
+        - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-02" }
+        - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-03" }
+        - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Master-Node" }
+        - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-04" }
+        - { networks: "{u'Network adapter 1':u'Monitoring'}", vmname: "Monitoring" }
+        - { networks: "{u'Network adapter 1':u'CI/CD Dev'}", vmname: "Jenkins" }
+        - { networks: "{u'Network adapter 1':u'CI/CD Dev'}", vmname: "Argo" }
+        - { networks: "{u'Network adapter 1':u'DB Dev'}", vmname: "DB-Dev" }
+        - { networks: "{u'Network adapter 1':u'DB Dev'}", vmname: "Redis for Dev" }
       delegate_to: localhost
