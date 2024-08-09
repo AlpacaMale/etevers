@@ -14,7 +14,7 @@
         networks: "{{ item.networks }}"
         folder: "/"
         power_on: false
-        ovf: "{{ [661ce08d-87480024-537c-d89d67eea260] + 'OVF/LinuxTemplates.ovf' }}"
+        ovf: "[661ce08d-87480024-537c-d89d67eea260] OVF/LinuxTemplates.ovf"
       loop:
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-01" }
         - { networks: "{u'Network adapter 1':u'K8S Dev'}", vmname: "Worker-Node-02" }
