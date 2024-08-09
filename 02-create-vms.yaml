@@ -13,7 +13,7 @@
         folder: "/"
         name: "{{ item.vmname }}"
         state: poweredoff
-        guest_id: "vmkernel8Guest,"
+        guest_id: "vmkernel8Guest"
         hardware:
           version: 20
           num_cpus: "{{ item.cpus }}"
