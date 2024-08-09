@@ -81,8 +81,6 @@
           set nat source rule 10 source address 172.16.0.0/16
           set nat source rule 10 translation address masquerade
 
-          set service ssh port 22
-
           commit
           save"
         wait_for_process: True
