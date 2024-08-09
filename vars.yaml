@@ -9,6 +9,7 @@ esxi_hostname: "esxi"
 esxi_username: "root"
 
 datastore_name: "Local-ESXi-02"
+datastore_path: "/vmfs/volumes/661ce08d-87480024-537c-d89d67eea260"
 vcenter_datacenter: "ha-datacenter"
 
 iso_folder: "[{{ datastore_name }}]\\ISOs\\"
