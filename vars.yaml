@@ -12,3 +12,11 @@ datastore_name: "Local-ESXi-02"
 vcenter_datacenter: "ha-datacenter"
 
 iso_folder: "[{{ datastore_name }}]\\ISOs\\"
+
+hosts_entries:
+  - { ip: "172.16.0.2", name: "bastion" }
+  - { ip: "172.16.1.2", name: "controlplane" }
+  - { ip: "172.16.1.3", name: "node01" }
+  - { ip: "172.16.1.4", name: "node02" }
+  - { ip: "172.16.1.5", name: "node03" }
+  - { ip: "172.16.1.6", name: "node04" }

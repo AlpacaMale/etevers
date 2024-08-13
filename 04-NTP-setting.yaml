@@ -1,0 +1,74 @@
+---
+- hosts: registry
+  become: yes
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: Add hosts entries to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ item.ip }}    {{ item.name }}"
+        state: present
+      loop: "{{ hosts_entries }}"
+
+    - name: Generate SSH key if not present
+      openssh_keypair:
+        path: /root/.ssh/id_rsa
+        type: rsa
+        size: 2048
+        state: present
+        force: no
+
+    - name: Copy SSH key to all nodes
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+      loop:
+        - controlplane
+        - node01
+        - node02
+        - node03
+        - node04
+      delegate_to: "{{ item }}"
+
+    - name: Copy /etc/hosts to controlplane
+      copy:
+        src: /etc/hosts
+        dest: /etc/hosts
+      loop:
+        - controlplane
+        - node01
+        - node02
+        - node03
+        - node04
+      delegate_to: "{{ item }}"
+
+    - name: Set hostname on controlplane
+      hostname:
+        name: { { item } }
+      loop:
+        - controlplane
+        - node01
+        - node02
+        - node03
+        - node04
+      delegate_to: { { item } }
+
+    - name: Disable and stop firewalld
+      systemd:
+        name: firewalld
+        enabled: no
+        state: stopped
+
+    - name: Allow 172.16.0.0/16 in chrony.conf
+      lineinfile:
+        path: /etc/chrony.conf
+        regexp: "^#allow"
+        insertafter: "^#allow"
+        line: "allow 172.16.0.0/16"
+
+    - name: Restart chronyd service
+      systemd:
+        name: chronyd
+        state: restarted

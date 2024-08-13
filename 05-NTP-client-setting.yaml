@@ -1,0 +1,36 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Disable and stop firewalld
+      systemd:
+        name: firewalld
+        enabled: no
+        state: stopped
+
+    - name: Comment out existing server entries in /etc/chrony.conf
+      lineinfile:
+        path: /etc/chrony.conf
+        regexp: "^server "
+        line: "#server"
+        state: present
+
+    - name: Add custom NTP server to /etc/chrony.conf
+      lineinfile:
+        path: /etc/chrony.conf
+        line: "server bastion iburst"
+        state: present
+
+    - name: Restart chronyd service
+      systemd:
+        name: chronyd
+        state: restarted
+
+    - name: Check NTP synchronization status
+      command: chronyc sources -v
+      register: ntp_status
+
+    - name: Print NTP synchronization status
+      debug:
+        var: ntp_status.stdout
