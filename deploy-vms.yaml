@@ -11,7 +11,7 @@
         validate_certs: "false"
         folder: "/"
         name: "{{ item.vmname }}"
-        state: poweredoff
+        state: poweredon
         guest_id: "rhel9_64Guest"
         hardware:
           version: 20
