@@ -12,7 +12,7 @@
         folder: "/"
         name: "{{ item.vmname }}"
         state: poweredoff
-        guest_id: "rhel8_64Guest,"
+        guest_id: "rhel8_64Guest"
         hardware:
           version: 20
           num_cpus: "{{ item.cpus }}"
