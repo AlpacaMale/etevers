@@ -1,0 +1,7 @@
+ansible_python_interpreter: /bin/python3
+
+esxi_hostname: "esxi"
+esxi_username: "root"
+datastore_name: "Local-ESXi-02"
+
+iso_folder: "[{{ datastore_name }}]\\ISOs\\"
