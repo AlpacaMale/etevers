@@ -3,13 +3,6 @@
   vars_files: ./vars.yaml
 
   tasks:
-    - name: Add hosts entries to /etc/hosts
-      lineinfile:
-        path: /etc/hosts
-        line: "{{ item.ip }}    {{ item.name }}"
-        state: present
-      loop: "{{ hosts_entries }}"
-
     - name: Copy /etc/hosts to controlplane
       copy:
         src: /etc/hosts
