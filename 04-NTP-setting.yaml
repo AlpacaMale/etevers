@@ -1,6 +1,5 @@
 ---
 - hosts: localhost
-  become: yes
   vars_files: ./vars.yaml
 
   tasks:
@@ -10,27 +9,6 @@
         line: "{{ item.ip }}    {{ item.name }}"
         state: present
       loop: "{{ hosts_entries }}"
-
-    - name: Generate SSH key if not present
-      openssh_keypair:
-        path: /root/.ssh/id_rsa
-        type: rsa
-        size: 2048
-        state: present
-        force: no
-
-    - name: Copy SSH key to all nodes
-      authorized_key:
-        user: root
-        state: present
-        key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
-      loop:
-        - controlplane
-        - node01
-        - node02
-        - node03
-        - node04
-      delegate_to: "{{ item }}"
 
     - name: Copy /etc/hosts to controlplane
       copy:
