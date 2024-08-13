@@ -46,14 +46,14 @@
 
     - name: Set hostname on controlplane
       hostname:
-        name: { { item } }
+        name: "{{ item }}"
       loop:
         - controlplane
         - node01
         - node02
         - node03
         - node04
-      delegate_to: { { item } }
+      delegate_to: "{{ item }}"
 
     - name: Disable and stop firewalld
       systemd:
