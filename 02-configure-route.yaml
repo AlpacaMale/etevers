@@ -25,55 +25,21 @@
           set interfaces ethernet eth0 ipv6 address no-default-link-local
           set interfaces ethernet eth1 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 4095 description 'Trunk'
-          set interfaces ethernet eth1 vif 4095 address 172.16.0.1/24
-          set interfaces ethernet eth1 vif 4095 ipv6 address no-default-link-local
+          set interfaces ethernet eth1 description 'K8S'
+          set interfaces ethernet eth1 address 172.16.1.1/24
+          set interfaces ethernet eth1 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 20 description 'K8S'
-          set interfaces ethernet eth1 vif 20 address 172.16.1.1/24
-          set interfaces ethernet eth1 vif 20 ipv6 address no-default-link-local
+          set interfaces ethernet eth2 30 description 'DB'
+          set interfaces ethernet eth2 30 address 172.16.2.1/24
+          set interfaces ethernet eth2 30 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 30 description 'DB'
-          set interfaces ethernet eth1 vif 30 address 172.16.2.1/24
-          set interfaces ethernet eth1 vif 30 ipv6 address no-default-link-local
+          set interfaces ethernet eth3 40 description 'CI/CD'
+          set interfaces ethernet eth3 40 address 172.16.3.1/24
+          set interfaces ethernet eth3 40 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 40 description 'CI/CD'
-          set interfaces ethernet eth1 vif 40 address 172.16.3.1/24
-          set interfaces ethernet eth1 vif 40 ipv6 address no-default-link-local
-
-          set interfaces ethernet eth1 vif 50 description 'Monitoring'
-          set interfaces ethernet eth1 vif 50 address 172.16.4.1/24
-          set interfaces ethernet eth1 vif 50 ipv6 address no-default-link-local
-
-          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 option default-router 172.16.0.1
-          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 option name-server 8.8.8.8
-          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 range 0 start 172.16.0.2
-          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 range 0 stop 172.16.0.100
-          set service dhcp-server shared-network-name K8S subnet 172.16.0.0/24 subnet-id 1
-
-          set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 option default-router 172.16.1.1
-          set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 option name-server 8.8.8.8
-          set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 range 0 start 172.16.1.2
-          set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 range 0 stop 172.16.1.100
-          set service dhcp-server shared-network-name K8S subnet 172.16.1.0/24 subnet-id 2
-
-          set service dhcp-server shared-network-name DB subnet 172.16.2.0/24 option default-router 172.16.2.1
-          set service dhcp-server shared-network-name DB subnet 172.16.2.0/24 option name-server 8.8.8.8
-          set service dhcp-server shared-network-name DB subnet 172.16.2.0/24 range 0 start 172.16.2.2
-          set service dhcp-server shared-network-name DB subnet 172.16.2.0/24 range 0 stop 172.16.2.100
-          set service dhcp-server shared-network-name DB subnet 172.16.2.0/24 subnet-id 3
-
-          set service dhcp-server shared-network-name CI/CD subnet 172.16.3.0/24 option default-router 172.16.3.1
-          set service dhcp-server shared-network-name CI/CD subnet 172.16.3.0/24 option name-server 8.8.8.8
-          set service dhcp-server shared-network-name CI/CD subnet 172.16.3.0/24 range 0 start 172.16.3.2
-          set service dhcp-server shared-network-name CI/CD subnet 172.16.3.0/24 range 0 stop 172.16.3.100
-          set service dhcp-server shared-network-name CI/CD subnet 172.16.3.0/24 subnet-id 4
-
-          set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 option default-router 172.16.4.1
-          set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 option name-server 8.8.8.8
-          set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 range 0 start 172.16.4.2
-          set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 range 0 stop 172.16.4.100
-          set service dhcp-server shared-network-name Monitoring subnet 172.16.4.0/24 subnet-id 5
+          set interfaces ethernet eth4 50 description 'Monitoring'
+          set interfaces ethernet eth4 50 address 172.16.4.1/24
+          set interfaces ethernet eth4 50 ipv6 address no-default-link-local
 
           set protocols static route 0.0.0.0/0 next-hop 192.168.7.1
 
