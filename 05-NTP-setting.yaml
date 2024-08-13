@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   vars_files: ./vars.yaml
-
   tasks:
     - name: Copy /etc/hosts to controlplane
       copy:
