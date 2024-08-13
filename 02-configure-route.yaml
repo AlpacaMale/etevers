@@ -25,9 +25,9 @@
           set interfaces ethernet eth0 ipv6 address no-default-link-local
           set interfaces ethernet eth1 ipv6 address no-default-link-local
 
-          set interfaces ethernet eth1 vif 0 description 'Trunk'
-          set interfaces ethernet eth1 vif 0 address 172.16.0.1/24
-          set interfaces ethernet eth1 vif 0 ipv6 address no-default-link-local
+          set interfaces ethernet eth1 vif 4095 description 'Trunk'
+          set interfaces ethernet eth1 vif 4095 address 172.16.0.1/24
+          set interfaces ethernet eth1 vif 4095 ipv6 address no-default-link-local
 
           set interfaces ethernet eth1 vif 20 description 'K8S'
           set interfaces ethernet eth1 vif 20 address 172.16.1.1/24
