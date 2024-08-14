@@ -1,20 +1,24 @@
+import os
 import redis
 
-DB_PRIMARY_ROUTE = "172.16.0.201"
-DB_SECONDARY_ROUTE = "172.16.0.202"
-RDS_ROUTE = "rds.crqgcai442on.ap-northeast-2.rds.amazonaws.com"
-REDIS_ROUTE = "redis-session-nhbb1i.serverless.apn2.cache.amazonaws.com"
+DB_PRIMARY_ROUTE = os.getenv("DB_PRIMARY_ROUTE")
+DB_SECONDARY_ROUTE = os.getenv("DB_SECONDARY_ROUTE")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWD = os.getenv("DB_PASSWD")
+RDS_ROUTE = os.getenv("RDS_ROUTE")
+REDIS_ROUTE = os.getenv("REDIS_ROUTE")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 class Config:
 
     SQLALCHEMY_BINDS = {
-        "db_primary": f"mysql+pymysql://root:12345678@{ DB_PRIMARY_ROUTE }:3306/mydb",
-        "db_secondary": f"mysql+pymysql://root:12345678@{ DB_SECONDARY_ROUTE }:3306/mydb",
-        "rds": f"mysql+pymysql://root:12345678@{ RDS_ROUTE }:3306/mydb",
+        "db_primary": f"mysql+pymysql://{DB_USER}:{DB_PASSWD}@{DB_PRIMARY_ROUTE}:3306/mydb",
+        "db_secondary": f"mysql+pymysql://{DB_USER}:{DB_PASSWD}@{DB_SECONDARY_ROUTE}:3306/mydb",
+        "rds": f"mysql+pymysql://{DB_USER}:{DB_PASSWD}@{RDS_ROUTE}:3306/mydb",
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = "your_secret_key"
+    SECRET_KEY = SECRET_KEY
     SESSION_TYPE = "redis"
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True

@@ -1,12 +1,15 @@
+import os
 import google.generativeai as genai
 from datetime import date as dt_date
 
-# API 키
-my_api_key = "AIzaSyCbMrzUXYOAg4vuDxYv5vwWQUkK6kUJIu8"
+
+# 환경 변수에서 API 키와 프로젝트 ID 가져오기
+my_api_key = os.getenv("GENAI_API_KEY")
+project_id = os.getenv("GENAI_PROJECT_ID")
 
 # Geminai API 키 설정
 genai.configure(api_key=my_api_key)
-genai.project_id = "533241448251"
+genai.project_id = project_id
 
 
 def create_meal_chain_1(user_info, preference_datas):
