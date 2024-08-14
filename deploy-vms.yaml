@@ -20,7 +20,7 @@
           memory_mb: 4096
           scsi: paravirtual
         disk:
-          - size_gb: 40
+          - size_gb: 500
             type: thin
             datastore: "{{ datastore_name }}"
         networks:
