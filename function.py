@@ -13,7 +13,6 @@ from ping3 import ping
 from config import DB_PRIMARY_ROUTE, DB_SECONDARY_ROUTE, RDS_ROUTE
 from ai import (
     create_meal_chain_1,
-    create_meal_chain_2,
     create_meal_chain_3,
     create_meal_chain_4,
 )
@@ -52,16 +51,12 @@ def teardown_request(exception):
 
 
 def get_primary_db():
-    return get_db("db_primary")
-
-
-# def get_primary_db():
-#     if ping(DB_PRIMARY_ROUTE, timeout=0.1):
-#         return get_db("db_primary")
-#     elif ping(DB_SECONDARY_ROUTE, timeout=0.1):
-#         return get_db("db_secondary")
-#     else:
-#         return get_db("rds")
+    if ping(DB_PRIMARY_ROUTE, timeout=0.1):
+        return get_db("db_primary")
+    elif ping(DB_SECONDARY_ROUTE, timeout=0.1):
+        return get_db("db_secondary")
+    else:
+        return get_db("rds")
 
 
 def process_meal_plan(app, email, task_id, tasks, tasks_lock):
