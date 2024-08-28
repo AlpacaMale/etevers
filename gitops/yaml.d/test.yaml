@@ -1,0 +1,9 @@
+---
+- name: test
+  hosts: localhost
+  vars:
+    user: user01
+  tasks:
+    - name: create user {{ user }}
+      user:
+        name: "{{ user }}"
