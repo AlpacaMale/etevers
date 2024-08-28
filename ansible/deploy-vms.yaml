@@ -1,0 +1,45 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_guest_module.html
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+  tasks:
+    - name: Create VMS
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        validate_certs: "false"
+        folder: "/"
+        name: "{{ item.vmname }}"
+        state: poweredon
+        guest_id: "rhel9_64Guest"
+        hardware:
+          version: 20
+          num_cpus: 2
+          nested_virt: true
+          memory_mb: 4096
+          scsi: paravirtual
+        disk:
+          - size_gb: 500
+            type: thin
+            datastore: "{{ datastore_name }}"
+        networks:
+          - name: "Outside"
+            ip: "{{ item.network_ip }}"
+            gateway: "192.168.7.1"
+            device_type: vmxnet3
+            netmask: "255.255.255.0"
+            dns_servers:
+              - "8.8.8.8"
+              - "8.8.4.4"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            state: present
+            type: iso
+            iso_path: "{{ iso_folder + 'Rocky-9.3-x86_64-dvd.iso' }}"
+      loop:
+        - { network_ip: "192.16.7.181", folder_name: "Master Node", vmname: "Master-Node" }
+        - { network_ip: "192.16.7.182", folder_name: "Worker Node 01", vmname: "Worker-Node-01" }
+        - { network_ip: "192.16.7.183", folder_name: "Worker Node 02", vmname: "Worker-Node-02" }
+        - { network_ip: "192.16.7.184", folder_name: "Worker Node 03", vmname: "Worker-Node-03" }
