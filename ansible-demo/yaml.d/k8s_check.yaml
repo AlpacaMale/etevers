@@ -1,0 +1,8 @@
+---
+- name: See if k8s pre processing work
+  hosts: korea
+  gather_facts: no
+
+  tasks:
+    - name: Gather selinux facts
+

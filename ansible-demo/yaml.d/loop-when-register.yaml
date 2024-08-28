@@ -1,0 +1,13 @@
+---
+- name: Restart HTTPD if Postfix is running
+  hosts: korea
+  tasks:
+    - name: Get Postfix server status
+      command: /usr/bin/systemctl is-active postfix
+      register: result
+
+    - name: Restart apache HTTPD based on postfix status
+      service:
+        name: httpd
+        state: restarted
+      when: result.rc == 0
