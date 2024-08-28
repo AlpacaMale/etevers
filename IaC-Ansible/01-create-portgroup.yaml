@@ -1,0 +1,24 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_vswitch_module.html#ansible-collections-community-vmware-vmware-vswitch-module
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_portgroup_module.html
+
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: Adding Portgroups for Dev
+      community.vmware.vmware_portgroup:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        esxi_hostname: "{{ vcenter_hostname }}"
+        validate_certs: no
+        switch: "{{ switch_name }}"
+        portgroup: "{{ item.name }}"
+        vlan_id: "{{ item.vlan_id }}"
+      loop:
+        - { name: "K8S Dev", vlan_id: 20 }
+        - { name: "DB Dev", vlan_id: 30 }
+        - { name: "CI/CD Dev", vlan_id: 40 }
+        - { name: "Monitoring", vlan_id: 50 }
+      delegate_to: localhost

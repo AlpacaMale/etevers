@@ -1,0 +1,54 @@
+## https://docs.ansible.com/ansible/latest/collections/community/vmware/vmware_vm_shell_module.html#ansible-collections-community-vmware-vmware-vm-shell-module
+---
+- hosts: localhost
+  vars_files: ./vars.yaml
+
+  tasks:
+    - name: VyOS Router Configuration
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ lookup('env', 'VCENTER_PASSWORD') }}"
+        validate_certs: "false"
+        folder: "/"
+        vm_id: "Router"
+        vm_id_type: vm_name
+        vm_username: "vyos"
+        vm_password: "vyos"
+        vm_shell: /bin/vbash
+        vm_shell_cwd: "/tmp"
+        vm_shell_args: |-
+          -c "source /opt/vyatta/etc/functions/script-template
+          configure
+          set interfaces ethernet eth0 description Outside
+          set interfaces ethernet eth0 address dhcp
+          set interfaces ethernet eth0 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth1 description 'K8S'
+          set interfaces ethernet eth1 address 172.16.1.1/24
+          set interfaces ethernet eth1 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth2 description 'DB'
+          set interfaces ethernet eth2 address 172.16.2.1/24
+          set interfaces ethernet eth2 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth3 description 'CI/CD'
+          set interfaces ethernet eth3 address 172.16.3.1/24
+          set interfaces ethernet eth3 ipv6 address no-default-link-local
+
+          set interfaces ethernet eth4 description 'Monitoring'
+          set interfaces ethernet eth4 address 172.16.4.1/24
+          set interfaces ethernet eth4 ipv6 address no-default-link-local
+
+          set protocols static route 0.0.0.0/0 next-hop 192.168.7.1
+
+          set nat source rule 10 outbound-interface name 'eth0'
+          set nat source rule 10 source address 172.16.0.0/16
+          set nat source rule 10 translation address masquerade
+
+          commit
+          save"
+        wait_for_process: True
+        timeout: 180
+      delegate_to: localhost
+      register: shell_command_with_wait_timeout
